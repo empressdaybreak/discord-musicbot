@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "target": "esnext",
-        "module": "esnext",
+        "target": "es6",
+        "module": "commonjs",
         "strict": true,
         "jsx": "preserve",
         "importHelpers": true,
@@ -13,6 +13,7 @@
         "sourceMap": true,
         "baseUrl": ".",
         "types": [
+            "node"
         ],
         "paths": {
             "@/*": [
@@ -20,8 +21,7 @@
             ]
         },
         "lib": [
-            "esnext",
-            "scripthost"
+            "es6"
         ]
     },
     "include": [
