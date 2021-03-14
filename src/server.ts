@@ -35,32 +35,26 @@ async function searchYouTube(term): Promise<YouTubeSearchResults[]> {
 
 client.on('ready', () => {
     console.log(`${client.user!.tag}에 로그인하였습니다!`);
+    client.user?.setActivity('야만퀘 분배', { type: 'PLAYING' })
 });
 
 client.on('message', async msg => {
-    if (msg.content === '들어와') {
+    if (msg.content === '라리호' || msg.content === ';;j') {
         if(!msg.member?.voice.channel) {
-            await msg.channel.send('채널에는 아무도 없는것 같아요!');
+            await msg.channel.send('채널에는 아무도 없는것 같다 쿠뽀!');
         } else {
-            await msg.channel.send('무슨 노래를 재생할까요?');
+            await msg.channel.send('무슨 노래를 재생해 쿠뽀?');
             voiceConnection = await msg.member?.voice.channel?.join();
         }
     }
 
-    if(msg.content === '나가줘') {
-        await msg.channel.send('나가볼께요');
+    if(msg.content === '나가줘' || msg.content === ';;leave') {
+        await msg.channel.send('이만 가볼께 쿠뽀!');
         voiceConnection?.disconnect();
     }
 
-    if (msg.content.startsWith('!찾기')) {
-        // !조건만남검색 미시녀가 춤추는 영상
-        // -> '미시녀가 춤추는 영상'
-        // msg.content.split(" "); // ['!조건만남검색', '미시녀가', '춤추는', '영상']
-        // 0번 빼고 조인으로 합치는 방법이 있고
-        const term = msg.content.replace(/^!찾기\s*/, '');
-
-        console.log(msg.content);
-        console.log(term);
+    if (msg.content.startsWith(';;f')) {
+        const term = msg.content.replace(/^;;f\s*/, '');
 
         const searchResults = await searchYouTube(term);
         musicList = searchResults;
@@ -74,15 +68,15 @@ client.on('message', async msg => {
         msg.channel.send(message);
     }
 
-    if (msg.content.startsWith("!play")) {
-        const numberTerm = msg.content.replace(/^!play\s*/, '');
+    if (msg.content.startsWith(";;p")) {
+        const numberTerm = msg.content.replace(/^;;p\s*/, '');
 
         if(!voiceConnection) {
-            msg.channel.send('채널에 사람이 없어요!');
+            msg.channel.send('채널에는 아무도 없는것 같다 쿠뽀!');
         } else if(musicQue.length == 0) {
-            musicQue.push(`${musicList[numberTerm].link}`);
+            musicQue.push(`${musicList[numberTerm].link} ${musicList[numberTerm].title}`);
 
-            await msg.channel.send(`${musicQue} 노래를 재생합니다.`);
+            await msg.channel.send(`${musicQue} 노래를 재생 할께 쿠뽀!`);
 
             voiceConnection.play(
               // await ytdl(musicList[numberTerm].link, {filter: "audioonly"}),
@@ -93,28 +87,36 @@ client.on('message', async msg => {
                 }
             );
         } else {
-            musicQue.push(`${musicList[numberTerm].link}`);
+            musicQue.push(`${musicList[numberTerm].link} ${musicList[numberTerm].title}`);
         }
         musicList = [];
     }
 
-    if(msg.content === '!목록') {
+    if(msg.content === ';;l') {
         console.log(musicQue);
+        let musicListMessage = '';
+
+        msg.channel.send(musicQue);
     }
 
     if(msg.content === ';;s') {
         voiceConnection?.dispatcher.destroy();
         musicQue.shift();
 
-        await msg.channel.send(`${musicQue} 노래를 재생합니다.`);
-        voiceConnection?.play(
-          // await ytdl(musicList[numberTerm].link, {filter: "audioonly"}),
-          await ytdl(musicQue[0], {filter: "audioonly"}),
-          {
-              type: 'opus',
-              highWaterMark: 50,
-          }
-        );
+        if(musicQue.length != 0) {
+            await msg.channel.send(`${musicQue} 노래를 재생 할께 쿠뽀!`);
+
+            voiceConnection?.play(
+              // await ytdl(musicList[numberTerm].link, {filter: "audioonly"}),
+              await ytdl(musicQue[0], {filter: "audioonly"}),
+              {
+                  type: 'opus',
+                  highWaterMark: 50,
+              }
+            );
+        } else {
+            await msg.channel.send("목록에 노래가 없어 쿠뽀!");
+        }
 
         console.log(musicQue);
     }
