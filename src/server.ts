@@ -7,6 +7,7 @@ let voiceConnection: VoiceConnection | null | undefined = null;
 
 // 결과 값을 저장함
 let musicList: YouTubeSearchResults[] = [];
+let musicQue:any = [];
 
 const opts = {
     maxResults: 5,
@@ -76,25 +77,46 @@ client.on('message', async msg => {
     if (msg.content.startsWith("!play")) {
         const numberTerm = msg.content.replace(/^!play\s*/, '');
 
-        console.log(msg.content);
-        console.log(numberTerm);
-
         if(!voiceConnection) {
             msg.channel.send('채널에 사람이 없어요!');
-        } else {
-            await msg.channel.send(`${musicList[numberTerm].title} 노래를 재생합니다.`);
+        } else if(musicQue.length == 0) {
+            musicQue.push(`${musicList[numberTerm].link}`);
+
+            await msg.channel.send(`${musicQue} 노래를 재생합니다.`);
 
             voiceConnection.play(
-              // await ytdl('https://www.youtube.com/watch?v=D00hlkW0u3U', { filter: "audioonly" }),
-              await ytdl(musicList[numberTerm].link, {filter: "audioonly"}),
+              // await ytdl(musicList[numberTerm].link, {filter: "audioonly"}),
+              await ytdl(musicQue[0], {filter: "audioonly"}),
               {
                   type: 'opus',
                   highWaterMark: 50,
-              }
+                }
             );
+        } else {
+            musicQue.push(`${musicList[numberTerm].link}`);
         }
-
         musicList = [];
+    }
+
+    if(msg.content === '!목록') {
+        console.log(musicQue);
+    }
+
+    if(msg.content === ';;s') {
+        voiceConnection?.dispatcher.destroy();
+        musicQue.shift();
+
+        await msg.channel.send(`${musicQue} 노래를 재생합니다.`);
+        voiceConnection?.play(
+          // await ytdl(musicList[numberTerm].link, {filter: "audioonly"}),
+          await ytdl(musicQue[0], {filter: "audioonly"}),
+          {
+              type: 'opus',
+              highWaterMark: 50,
+          }
+        );
+
+        console.log(musicQue);
     }
 });
 
