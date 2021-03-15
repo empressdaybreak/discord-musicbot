@@ -8,6 +8,7 @@ let voiceConnection: VoiceConnection | null | undefined = null;
 // 결과 값을 저장함
 let musicList: YouTubeSearchResults[] = [];
 let musicQue:any = [];
+let musicTitleQue:any = [];
 
 const opts = {
     maxResults: 5,
@@ -35,11 +36,11 @@ async function searchYouTube(term): Promise<YouTubeSearchResults[]> {
 
 client.on('ready', () => {
     console.log(`${client.user!.tag}에 로그인하였습니다!`);
-    client.user?.setActivity('야만퀘 분배', { type: 'PLAYING' })
+    client.user?.setActivity('테스트 운용 / 야만퀘 분배', { type: 'PLAYING' })
 });
 
 client.on('message', async msg => {
-    if (msg.content === '라리호' || msg.content === ';;j') {
+    if (msg.content === '라리호' || msg.content === ';;join') {
         if(!msg.member?.voice.channel) {
             await msg.channel.send('채널에는 아무도 없는것 같다 쿠뽀!');
         } else {
@@ -53,6 +54,7 @@ client.on('message', async msg => {
         voiceConnection?.disconnect();
     }
 
+    // Music Search
     if (msg.content.startsWith(';;f')) {
         const term = msg.content.replace(/^;;f\s*/, '');
 
@@ -65,7 +67,7 @@ client.on('message', async msg => {
             message += `${index + 1}번 ${item.title}\n`;
         })
 
-        msg.channel.send(message);
+        msg.channel.send(`검색결과가 나왔어 쿠뽀!\n${message}`);
     }
 
     if (msg.content.startsWith(";;p")) {
@@ -74,9 +76,11 @@ client.on('message', async msg => {
         if(!voiceConnection) {
             msg.channel.send('채널에는 아무도 없는것 같다 쿠뽀!');
         } else if(musicQue.length == 0) {
-            musicQue.push(`${musicList[numberTerm].link} ${musicList[numberTerm].title}`);
+            musicQue.push(`${musicList[numberTerm].link}`);
+            musicTitleQue.push(`${musicList[numberTerm].title}`);
 
-            await msg.channel.send(`${musicQue} 노래를 재생 할께 쿠뽀!`);
+            // await msg.channel.send(`"${musicQue}" 노래를 재생 할께 쿠뽀!`);
+            await msg.channel.send(`"${musicList[numberTerm].title}" 노래를 재생 할께 쿠뽀!`);
 
             voiceConnection.play(
               // await ytdl(musicList[numberTerm].link, {filter: "audioonly"}),
@@ -87,24 +91,42 @@ client.on('message', async msg => {
                 }
             );
         } else {
-            musicQue.push(`${musicList[numberTerm].link} ${musicList[numberTerm].title}`);
+            musicQue.push(`${musicList[numberTerm].link}`);
+            musicTitleQue.push(`${musicList[numberTerm].title}`);
+            msg.channel.send(`"${musicList[numberTerm].title}" 노래를 목록에 추가 했어 쿠뽀!`);
         }
         musicList = [];
     }
 
     if(msg.content === ';;l') {
         console.log(musicQue);
+        console.log(musicTitleQue);
         let musicListMessage = '';
 
-        msg.channel.send(musicQue);
+        if(musicTitleQue.length == 0){
+            msg.channel.send("예약되어 있는 노래가 없어 쿠뽀!");
+        } else {
+            musicTitleQue.forEach((item, index) => {
+                musicListMessage += `${index + 1}. ${item}\n`;
+            })
+
+            msg.channel.send(`현재 예약되어 있는 노래들이야 쿠뽀!\n${musicListMessage}`);
+        }
     }
 
     if(msg.content === ';;s') {
+        const numberTerm = msg.content.replace(/^;;s\s*/, '');
+        // if(voiceConnection?.dispatcher.destroy() == null) {
+        //     console.log("무언가 잘못되었다.");
+        // } else {
+        //     voiceConnection?.dispatcher.destroy();
+        // }
         voiceConnection?.dispatcher.destroy();
         musicQue.shift();
+        musicTitleQue.shift();
 
         if(musicQue.length != 0) {
-            await msg.channel.send(`${musicQue} 노래를 재생 할께 쿠뽀!`);
+            await msg.channel.send(`"${musicTitleQue[0]}" 노래를 재생 할께 쿠뽀!`);
 
             voiceConnection?.play(
               // await ytdl(musicList[numberTerm].link, {filter: "audioonly"}),
