@@ -36,7 +36,7 @@ async function searchYouTube(term): Promise<YouTubeSearchResults[]> {
 
 client.on('ready', () => {
     console.log(`${client.user!.tag}에 로그인하였습니다!`);
-    client.user?.setActivity('테스트 운용 / 야만퀘 분배', { type: 'PLAYING' })
+    client.user?.setActivity('테스트 운용 / 나사가 빠진 상태', { type: 'PLAYING' })
 });
 
 client.on('message', async msg => {
@@ -70,11 +70,14 @@ client.on('message', async msg => {
         msg.channel.send(`검색결과가 나왔어 쿠뽀!\n${message}`);
     }
 
+
+    // 노래 재생 부분
     if (msg.content.startsWith(";;p")) {
-        const numberTerm = msg.content.replace(/^;;p\s*/, '');
+        const numberTerm = parseInt(msg.content.replace(/^;;p\s*/, ''), 10) - 1;
 
         if(!voiceConnection) {
             msg.channel.send('채널에는 아무도 없는것 같다 쿠뽀!');
+
         } else if(musicQue.length == 0) {
             musicQue.push(`${musicList[numberTerm].link}`);
             musicTitleQue.push(`${musicList[numberTerm].title}`);
@@ -89,7 +92,24 @@ client.on('message', async msg => {
                   type: 'opus',
                   highWaterMark: 50,
                 }
-            );
+            ).on("finish", async () => {
+                if(musicQue.length != 0) {
+                    musicQue.shift();
+                    musicTitleQue.shift();
+                    await msg.channel.send(`"${musicTitleQue[0]}" 노래를 재생 할께 쿠뽀!`);
+
+                    voiceConnection?.play(
+                        // await ytdl(musicList[numberTerm].link, {filter: "audioonly"}),
+                        await ytdl(musicQue[0], {filter: "audioonly"}),
+                        {
+                            type: 'opus',
+                            highWaterMark: 50,
+                        }
+                    );
+                } else {
+                    console.log('노래 끝!!');
+                }
+            });
         } else {
             musicQue.push(`${musicList[numberTerm].link}`);
             musicTitleQue.push(`${musicList[numberTerm].title}`);
@@ -114,28 +134,45 @@ client.on('message', async msg => {
         }
     }
 
-    if(msg.content === ';;s') {
-        const numberTerm = msg.content.replace(/^;;s\s*/, '');
-        // if(voiceConnection?.dispatcher.destroy() == null) {
-        //     console.log("무언가 잘못되었다.");
-        // } else {
-        //     voiceConnection?.dispatcher.destroy();
-        // }
-        voiceConnection?.dispatcher.destroy();
-        musicQue.shift();
-        musicTitleQue.shift();
-
+    // 노래를 스킵하는 구간
+    if(msg.content == ';;s') {
         if(musicQue.length != 0) {
+            voiceConnection?.dispatcher.destroy();
+            musicQue.shift();
+            musicTitleQue.shift();
+
             await msg.channel.send(`"${musicTitleQue[0]}" 노래를 재생 할께 쿠뽀!`);
 
             voiceConnection?.play(
-              // await ytdl(musicList[numberTerm].link, {filter: "audioonly"}),
-              await ytdl(musicQue[0], {filter: "audioonly"}),
-              {
-                  type: 'opus',
-                  highWaterMark: 50,
-              }
-            );
+                // await ytdl(musicList[numberTerm].link, {filter: "audioonly"}),
+                await ytdl(musicQue[0], {filter: "audioonly"}),
+                {
+                    type: 'opus',
+                    highWaterMark: 50,
+                }
+            ).on("finish", async () => {
+                if (musicQue.length != 0) {
+                    console.log(musicQue.length, "while문 들어가기전");
+                    while(musicQue.length != 1) {
+                        musicQue.shift();
+                        musicTitleQue.shift();
+                        await msg.channel.send(`"${musicTitleQue[0]}" 노래를 재생 할께 쿠뽀!`);
+
+                        console.log(musicQue.length, "while문 들어가고 처리 후");
+
+                        voiceConnection?.play(
+                            // await ytdl(musicList[numberTerm].link, {filter: "audioonly"}),
+                            await ytdl(musicQue[0], {filter: "audioonly"}),
+                            {
+                                type: 'opus',
+                                highWaterMark: 50,
+                            }
+                        );
+                    }
+                } else {
+                    console.log('노래 끝!!');
+                }
+            });
         } else {
             await msg.channel.send("목록에 노래가 없어 쿠뽀!");
         }

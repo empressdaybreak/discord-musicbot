@@ -19,7 +19,7 @@
     "webpack-node-externals": "^2.5.2"
   },
   "dependencies": {
-    "@discordjs/opus": "^0.3.2",
+    "@discordjs/opus": "https://github.com/empressdaybreak/discordjs-opus-macos-arm64.git#hotfix/macos-arm64-resolve-missing-symbol",
     "discord.js": "^12.3.1",
     "sodium": "^3.0.2",
     "youtube-search": "^1.1.6",
