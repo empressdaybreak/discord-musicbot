@@ -40,6 +40,27 @@ client.on('ready', () => {
 });
 
 client.on('message', async msg => {
+    // 재생하는 부분만 담겨져 있는 함수
+    const musicPlay = async (numberTerm) => {
+        musicQue.push(`${musicList[numberTerm].link}`);
+        musicTitleQue.push(`${musicList[numberTerm].title}`);
+
+        await msg.channel.send(`"${musicList[numberTerm].title}" 노래를 재생 할께 쿠뽀!`);
+
+        voiceConnection?.play(
+            await ytdl(musicQue[0], {filter: "audioonly"}),
+            {
+                type: 'opus',
+                highWaterMark: 1<<25,
+            }
+        );
+
+        console.log('음악큐', musicQue);
+        console.log('음악이름큐', musicTitleQue);
+    };
+
+
+    // Bot 을 들어오게 함
     if (msg.content === '라리호' || msg.content === ';;join') {
         if(!msg.member?.voice.channel) {
             await msg.channel.send('채널에는 아무도 없는것 같다 쿠뽀!');
@@ -49,12 +70,13 @@ client.on('message', async msg => {
         }
     }
 
+    // Bot 을 나가게 함
     if(msg.content === '나가줘' || msg.content === ';;leave') {
         await msg.channel.send('이만 가볼께 쿠뽀!');
         voiceConnection?.disconnect();
     }
 
-    // Music Search
+    // 음악 검색을 함
     if (msg.content.startsWith(';;f')) {
         const term = msg.content.replace(/^;;f\s*/, '');
 
@@ -76,40 +98,11 @@ client.on('message', async msg => {
         const numberTerm = parseInt(msg.content.replace(/^;;p\s*/, ''), 10) - 1;
 
         if(!voiceConnection) {
-            msg.channel.send('채널에는 아무도 없는것 같다 쿠뽀!');
+            await msg.channel.send('채널에는 아무도 없는것 같다 쿠뽀!');
 
         } else if(musicQue.length == 0) {
-            musicQue.push(`${musicList[numberTerm].link}`);
-            musicTitleQue.push(`${musicList[numberTerm].title}`);
+            await musicPlay(numberTerm);
 
-            // await msg.channel.send(`"${musicQue}" 노래를 재생 할께 쿠뽀!`);
-            await msg.channel.send(`"${musicList[numberTerm].title}" 노래를 재생 할께 쿠뽀!`);
-
-            voiceConnection.play(
-              // await ytdl(musicList[numberTerm].link, {filter: "audioonly"}),
-              await ytdl(musicQue[0], {filter: "audioonly"}),
-              {
-                  type: 'opus',
-                  highWaterMark: 50,
-                }
-            ).on("finish", async () => {
-                if(musicQue.length != 0) {
-                    musicQue.shift();
-                    musicTitleQue.shift();
-                    await msg.channel.send(`"${musicTitleQue[0]}" 노래를 재생 할께 쿠뽀!`);
-
-                    voiceConnection?.play(
-                        // await ytdl(musicList[numberTerm].link, {filter: "audioonly"}),
-                        await ytdl(musicQue[0], {filter: "audioonly"}),
-                        {
-                            type: 'opus',
-                            highWaterMark: 50,
-                        }
-                    );
-                } else {
-                    console.log('노래 끝!!');
-                }
-            });
         } else {
             musicQue.push(`${musicList[numberTerm].link}`);
             musicTitleQue.push(`${musicList[numberTerm].title}`);
@@ -118,6 +111,8 @@ client.on('message', async msg => {
         musicList = [];
     }
 
+
+    // 노래 리스트를 보여주는 부분
     if(msg.content === ';;l') {
         console.log(musicQue);
         console.log(musicTitleQue);
@@ -138,41 +133,14 @@ client.on('message', async msg => {
     if(msg.content == ';;s') {
         if(musicQue.length != 0) {
             voiceConnection?.dispatcher.destroy();
+
             musicQue.shift();
             musicTitleQue.shift();
+            console.log(musicQue, '처리 후');
 
             await msg.channel.send(`"${musicTitleQue[0]}" 노래를 재생 할께 쿠뽀!`);
 
-            voiceConnection?.play(
-                // await ytdl(musicList[numberTerm].link, {filter: "audioonly"}),
-                await ytdl(musicQue[0], {filter: "audioonly"}),
-                {
-                    type: 'opus',
-                    highWaterMark: 50,
-                }
-            ).on("finish", async () => {
-                if (musicQue.length != 0) {
-                    console.log(musicQue.length, "while문 들어가기전");
-                    while(musicQue.length != 1) {
-                        musicQue.shift();
-                        musicTitleQue.shift();
-                        await msg.channel.send(`"${musicTitleQue[0]}" 노래를 재생 할께 쿠뽀!`);
 
-                        console.log(musicQue.length, "while문 들어가고 처리 후");
-
-                        voiceConnection?.play(
-                            // await ytdl(musicList[numberTerm].link, {filter: "audioonly"}),
-                            await ytdl(musicQue[0], {filter: "audioonly"}),
-                            {
-                                type: 'opus',
-                                highWaterMark: 50,
-                            }
-                        );
-                    }
-                } else {
-                    console.log('노래 끝!!');
-                }
-            });
         } else {
             await msg.channel.send("목록에 노래가 없어 쿠뽀!");
         }
