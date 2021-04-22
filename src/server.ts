@@ -1,14 +1,22 @@
-import {Client, VoiceConnection} from 'discord.js';
+import {Channel, Client, DMChannel, NewsChannel, StreamDispatcher, TextChannel, VoiceConnection} from 'discord.js';
 import ytdl from 'ytdl-core-discord';
 import youtubeSearch, { YouTubeSearchResults } from 'youtube-search';
 
 const client = new Client();
-let voiceConnection: VoiceConnection | null | undefined = null;
+
+let voiceConnection: VoiceConnection | null = null;
+let channel: TextChannel | DMChannel | NewsChannel | null = null;
+let streamDispatcher: StreamDispatcher | null = null;
+let isPlaying: boolean = false;
+
+interface YoutubeVideo {
+    link: string;
+    title: string;
+}
 
 // 결과 값을 저장함
 let musicList: YouTubeSearchResults[] = [];
-let musicQue:any = [];
-let musicTitleQue:any = [];
+let musicQueue: YoutubeVideo[] = [];
 
 const opts = {
     maxResults: 5,
@@ -21,8 +29,6 @@ const opts = {
  * @returns 검색 결과를 반환합니다.
  */
 async function searchYouTube(term): Promise<YouTubeSearchResults[]> {
-    // term = msg.content.replace(/^!play\s*/, '');
-
     try {
         const {results} = await youtubeSearch(term,opts);
         console.log(results);
@@ -34,30 +40,49 @@ async function searchYouTube(term): Promise<YouTubeSearchResults[]> {
     return [];
 }
 
+// 재생하는 부분만 담겨져 있는 함수
+const musicPlay = async () => {
+    // musicQueue.push(`${musicList[numberTerm].link}`);
+    // musicTitleQue.push(`${musicList[numberTerm].title}`);
+    // await msg.channel.send(`"${musicList[numberTerm].title}" 노래를 재생 할께 쿠뽀!`);
+
+    const video = musicQueue.shift();
+
+    if (!video) {
+        return;
+    }
+
+    isPlaying = true;
+
+    await channel?.send(`"${video.title}" 노래를 재생 할께 쿠뽀!`);
+
+    streamDispatcher = voiceConnection?.play(
+        await ytdl(video.link, {filter: "audioonly"}),
+        {
+            type: 'opus',
+            highWaterMark: 1<<25,
+        }
+    ) || null;
+
+    streamDispatcher?.on("finish", () => {
+        if (musicQueue.length !== 0) {
+            musicPlay();
+        } else {
+            isPlaying = false;
+            channel?.send("모든 노래가 재생됐어!");
+        }
+    });
+};
+
 client.on('ready', () => {
     console.log(`${client.user!.tag}에 로그인하였습니다!`);
     client.user?.setActivity('테스트 운용 / 나사가 빠진 상태', { type: 'PLAYING' })
 });
 
 client.on('message', async msg => {
-    // 재생하는 부분만 담겨져 있는 함수
-    const musicPlay = async (numberTerm) => {
-        // musicQue.push(`${musicList[numberTerm].link}`);
-        // musicTitleQue.push(`${musicList[numberTerm].title}`);
-        // await msg.channel.send(`"${musicList[numberTerm].title}" 노래를 재생 할께 쿠뽀!`);
-
-        voiceConnection?.play(
-            await ytdl(musicQue[0], {filter: "audioonly"}),
-            {
-                type: 'opus',
-                highWaterMark: 1<<25,
-            }
-        );
-    };
-
-
     // Bot 을 들어오게 함
     if (msg.content === '라리호' || msg.content === ';;join') {
+        channel = msg.channel;
         if(!msg.member?.voice.channel) {
             await msg.channel.send('채널에는 아무도 없는것 같다 쿠뽀!');
         } else {
@@ -67,7 +92,7 @@ client.on('message', async msg => {
     }
 
     // Bot 을 나가게 함
-    if(msg.content === '나가줘' || msg.content === ';;leave') {
+    if (msg.content === '나가줘' || msg.content === ';;leave') {
         await msg.channel.send('이만 가볼께 쿠뽀!');
         voiceConnection?.disconnect();
     }
@@ -78,6 +103,7 @@ client.on('message', async msg => {
         const searchResults = await searchYouTube(term);
         let message = '';
 
+        // 검색 결과가 musicList 에 저장됨
         musicList = searchResults;
 
         searchResults.forEach((item, index) => {
@@ -92,59 +118,51 @@ client.on('message', async msg => {
     if (msg.content.startsWith(";;p")) {
         const numberTerm = parseInt(msg.content.replace(/^;;p\s*/, ''), 10) - 1;
 
-        if(!voiceConnection) {
+        if (!voiceConnection) {
             await msg.channel.send('채널에는 아무도 없는것 같다 쿠뽀!');
 
-        } else if(musicQue.length == 0) {
-            musicQue.push(`${musicList[numberTerm].link}`);
-            musicTitleQue.push(`${musicList[numberTerm].title}`);
-            await msg.channel.send(`"${musicList[numberTerm].title}" 노래를 재생 할께 쿠뽀!`);
-
-            await musicPlay(numberTerm);
-
+        } else if (!isPlaying) {
+            musicQueue.push({
+                link: musicList[numberTerm].link,
+                title: musicList[numberTerm].title,
+            });
+            await musicPlay();
         } else {
-            musicQue.push(`${musicList[numberTerm].link}`);
-            musicTitleQue.push(`${musicList[numberTerm].title}`);
-            msg.channel.send(`"${musicList[numberTerm].title}" 노래를 목록에 추가 했어 쿠뽀!`);
+            musicQueue.push({
+                link: musicList[numberTerm].link,
+                title: musicList[numberTerm].title,
+            });
+            await msg.channel.send(`"${musicList[numberTerm].title}" 노래를 목록에 추가 했어 쿠뽀!`);
         }
         musicList = [];
     }
 
-
-    // 노래 리스트를 보여주는 부분
-    if(msg.content === ';;l') {
-        console.log(musicQue);
-        console.log(musicTitleQue);
-        let musicListMessage = '';
-
-        if(musicTitleQue.length == 0){
-            await msg.channel.send("예약되어 있는 노래가 없어 쿠뽀!");
-        } else {
-            musicTitleQue.forEach((item, index) => {
-                musicListMessage += `${index + 1}. ${item}\n`;
-            })
-
-            await msg.channel.send(`현재 예약되어 있는 노래들이야 쿠뽀!\n${musicListMessage}`);
-        }
-    }
-
     // 노래를 스킵하는 구간
-    if(msg.content == ';;s') {
-        if(musicQue.length != 0) {
-            voiceConnection?.dispatcher.destroy();
+    if (msg.content == ';;s') {
+        if (musicQueue.length !== 0) {
+            streamDispatcher?.destroy();
 
-            musicQue.shift();
-            musicTitleQue.shift();
-            console.log(musicQue, '처리 후');
-
-            await msg.channel.send(`"${musicTitleQue[0]}" 노래를 재생 할께 쿠뽀!`);
-
-            await musicPlay(musicQue);
+            await musicPlay();
         } else {
             await msg.channel.send("목록에 노래가 없어 쿠뽀!");
         }
 
-        console.log(musicQue);
+        console.log('현재 남은 노래', musicQueue);
+    }
+
+    // 노래 리스트를 보여주는 부분
+    if (msg.content === ';;l') {
+        let musicListMessage = '';
+
+        if (musicQueue.length == 0){
+            await msg.channel.send("예약되어 있는 노래가 없어 쿠뽀!");
+        } else {
+            musicQueue.forEach((item, index) => {
+                musicListMessage += `${index + 1}. ${item.title}\n`;
+            })
+
+            await msg.channel.send(`현재 예약되어 있는 노래들이야 쿠뽀!\n${musicListMessage}`);
+        }
     }
 });
 
