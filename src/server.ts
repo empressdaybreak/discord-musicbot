@@ -42,10 +42,9 @@ client.on('ready', () => {
 client.on('message', async msg => {
     // 재생하는 부분만 담겨져 있는 함수
     const musicPlay = async (numberTerm) => {
-        musicQue.push(`${musicList[numberTerm].link}`);
-        musicTitleQue.push(`${musicList[numberTerm].title}`);
-
-        await msg.channel.send(`"${musicList[numberTerm].title}" 노래를 재생 할께 쿠뽀!`);
+        // musicQue.push(`${musicList[numberTerm].link}`);
+        // musicTitleQue.push(`${musicList[numberTerm].title}`);
+        // await msg.channel.send(`"${musicList[numberTerm].title}" 노래를 재생 할께 쿠뽀!`);
 
         voiceConnection?.play(
             await ytdl(musicQue[0], {filter: "audioonly"}),
@@ -54,9 +53,6 @@ client.on('message', async msg => {
                 highWaterMark: 1<<25,
             }
         );
-
-        console.log('음악큐', musicQue);
-        console.log('음악이름큐', musicTitleQue);
     };
 
 
@@ -79,17 +75,16 @@ client.on('message', async msg => {
     // 음악 검색을 함
     if (msg.content.startsWith(';;f')) {
         const term = msg.content.replace(/^;;f\s*/, '');
-
         const searchResults = await searchYouTube(term);
-        musicList = searchResults;
-
         let message = '';
+
+        musicList = searchResults;
 
         searchResults.forEach((item, index) => {
             message += `${index + 1}번 ${item.title}\n`;
         })
 
-        msg.channel.send(`검색결과가 나왔어 쿠뽀!\n${message}`);
+        await msg.channel.send(`검색결과가 나왔어 쿠뽀!\n${message}`);
     }
 
 
@@ -101,6 +96,10 @@ client.on('message', async msg => {
             await msg.channel.send('채널에는 아무도 없는것 같다 쿠뽀!');
 
         } else if(musicQue.length == 0) {
+            musicQue.push(`${musicList[numberTerm].link}`);
+            musicTitleQue.push(`${musicList[numberTerm].title}`);
+            await msg.channel.send(`"${musicList[numberTerm].title}" 노래를 재생 할께 쿠뽀!`);
+
             await musicPlay(numberTerm);
 
         } else {
@@ -119,13 +118,13 @@ client.on('message', async msg => {
         let musicListMessage = '';
 
         if(musicTitleQue.length == 0){
-            msg.channel.send("예약되어 있는 노래가 없어 쿠뽀!");
+            await msg.channel.send("예약되어 있는 노래가 없어 쿠뽀!");
         } else {
             musicTitleQue.forEach((item, index) => {
                 musicListMessage += `${index + 1}. ${item}\n`;
             })
 
-            msg.channel.send(`현재 예약되어 있는 노래들이야 쿠뽀!\n${musicListMessage}`);
+            await msg.channel.send(`현재 예약되어 있는 노래들이야 쿠뽀!\n${musicListMessage}`);
         }
     }
 
@@ -140,7 +139,7 @@ client.on('message', async msg => {
 
             await msg.channel.send(`"${musicTitleQue[0]}" 노래를 재생 할께 쿠뽀!`);
 
-
+            await musicPlay(musicQue);
         } else {
             await msg.channel.send("목록에 노래가 없어 쿠뽀!");
         }
