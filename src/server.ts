@@ -1,6 +1,7 @@
 import {Channel, Client, DMChannel, NewsChannel, StreamDispatcher, TextChannel, VoiceConnection} from 'discord.js';
 import ytdl from 'ytdl-core-discord';
 import youtubeSearch, { YouTubeSearchResults } from 'youtube-search';
+import {CarriageReturnLineFeed} from "ts-loader/dist/constants";
 
 const client = new Client();
 
@@ -76,12 +77,18 @@ const musicPlay = async () => {
 
 client.on('ready', () => {
     console.log(`${client.user!.tag}에 로그인하였습니다!`);
-    client.user?.setActivity('테스트 운용 / 나사가 빠진 상태', { type: 'PLAYING' })
+    client.user?.setActivity('식빵 굽기', { type: 'PLAYING' });
+});
+
+client.on('guildMemberAdd', member => {
+    const channel = member.guild.channels.cache.find(ch => ch.name === '테스트1');
+    console.log(channel);
+    (channel as TextChannel)?.send(`${member.displayName}`);
 });
 
 client.on('message', async msg => {
     // Bot 을 들어오게 함
-    if (msg.content === '라리호' || msg.content === ';;join') {
+    if (msg.content === ';;라리호' || msg.content === ';;join') {
         channel = msg.channel;
         if(!msg.member?.voice.channel) {
             await msg.channel.send('채널에는 아무도 없는것 같다 쿠뽀!');
