@@ -1,244 +1,25 @@
 import {Client, DMChannel, NewsChannel, StreamDispatcher, TextChannel, VoiceConnection} from 'discord.js';
 import ytdl from 'ytdl-core-discord';
 import youtubeSearch, { YouTubeSearchResults } from 'youtube-search';
-import config from './config';
-import axios from "axios";
+import {ParseUltimateAlexander,  ParseEdenGate, ParseEdenVerse} from './FFLogs/FFLogsFunc';
 
 const client = new Client();
+const Discord = require("discord.js");
 
-const server: {[key: string]: string} = {
-    모그리: 'moogle',
-    초코보: 'chocobo',
-    카벙클: 'carbuncle',
-    톤베리: 'tonberry',
-};
-const job: {[key: string]: string} = {
-    Astrologian: '점성술사',
-    Bard: '음유시인',
-    'Black Mage': '흑마도사',
-    'Dark Knight': '암흑기사',
-    Dragoon: '용기사',
-    Machinist: '기공사',
-    Monk: '몽크',
-    Ninja: '닌자',
-    Paladin: '나이트',
-    Scholar: '학자',
-    Summoner: '소환사',
-    Warrior: '전사',
-    'White Mage': '백마도사',
-    'Red Mage': '적마도사',
-    Samurai: '사무라이',
-    Dancer: '무도가',
-    Gunbreaker: '건브레이커',
-};
-
-type ExtractLayout = {
-    encounterID: number;
-    spec: string;
-    percentile: number;
-};
-
-
-const percentileSortFn = (a: ExtractLayout, b: ExtractLayout) =>
-    b.percentile - a.percentile;
-
-const sortByPercentile = (rawData: ExtractLayout[][]) =>
-    rawData.map((item) => {
-        item.sort(percentileSortFn);
-        return item;
-    });
-
-
-function SlicingByLayer(rawData: Array<any>): ExtractLayout[][] {
-    const layer: ExtractLayout[] = [];
-    const encounterIDList: number[] = [];
-    const output: ExtractLayout[][] = [];
-    let cnt: number = -1;
-    rawData.forEach((i) => {
-        if (i.difficulty === 101 || i.encounterID === 1050) {
-            layer.push({
-                encounterID: i.encounterID,
-                spec: i.spec,
-                percentile: i.percentile,
-            });
-        }
-    });
-
-    layer.forEach((e) => {
-        if (!encounterIDList.find((val) => val === e.encounterID)) {
-            output.push([]);
-            encounterIDList.push(e.encounterID);
-            cnt += 1;
-        }
-        output[cnt].push(e);
-    });
-    return output;
-}
-
-function SlicedBySpec(rawData: ExtractLayout[][]) {
-    let specList: string[] = [];
-    const output: ExtractLayout[][] = [];
-    const sortData: ExtractLayout[][] = sortByPercentile(rawData);
-
-    sortData.forEach((data) => {
-        specList = [];
-        output.push([]);
-        for (let i: number = 0; i < data.length; i += 1) {
-            if (!specList.find((val) => val === data[i].spec)) {
-                specList.push(data[i].spec);
-                output[output.length - 1].push(data[i]);
-            }
-        }
-    });
-
-    return output;
-}
-
-async function QueryHistorical(
-    serverNameENG: string,
-    charNameENG: string,
-    flag: number,
-) {
-    const url = `https://www.fflogs.com:443/v1/parses/character/${encodeURI(
-        charNameENG,
-    )}/${serverNameENG}/KR`;
-    return (
-        await axios.get(url, {
-            params: {
-                api_key: config.FF_KEY,
-                metric: 'rdps',
-                zone: flag,
-                timeframe: 'historical',
-            },
-        })
-    ).data;
-}
-
-async function QueryToday(
-    serverNameENG: string,
-    charNameENG: string,
-    flag: number,
-) {
-    const url = `https://www.fflogs.com:443/v1/parses/character/${encodeURI(
-        charNameENG,
-    )}/${serverNameENG}/KR`;
-    return (
-        await axios.get(url, {
-            params: {
-                api_key: config.FF_KEY,
-                metric: 'rdps',
-                zone: flag,
-            },
-        })
-    ).data;
-}
-
-async function RankMarker(
-    serverName: string,
-    charName: string,
-    flag: number,
-    CheckMethod: boolean,
-) {
-    const parseTier: string[] = [
-        '(회딱)',
-        '(초딱)',
-        '(파딱)',
-        '(보딱)',
-        '(주딱)',
-        '(핑딱)',
-        '(노딱)',
-    ];
-    const encounter: {[key: number]: string} = {
-        65: 'Eden Prime',
-        66: 'Voidwalker',
-        67: 'Leviathan',
-        68: 'Titan',
-        69: 'Ramuh',
-        70: 'Ifrit and Garuda',
-        71: 'The Idol of Darkness',
-        72: 'Shiva',
-        1050: 'The Epic of Alexander',
-    };
-
-    let output: string = '';
-    if (Object.keys(server).find((e) => e === serverName)) {
-        const getData: ExtractLayout[][] = SlicedBySpec(
-            SlicingByLayer(
-                CheckMethod
-                    ? await QueryHistorical(server[serverName], charName, flag)
-                    : await QueryToday(server[serverName], charName, flag),
-            ),
-        );
-
-        getData.forEach((e) => {
-            output += `> **${encounter[e[0].encounterID]}** \n`;
-            e.forEach((d) => {
-                if (d.percentile < 25) {
-                    output += `> \t\`${job[d.spec]} : ${
-                        Math.floor(d.percentile * 100) / 100
-                    }${parseTier[0]}\`\n`;
-                } else if (d.percentile < 50) {
-                    output += `> \t\`${job[d.spec]} : ${
-                        Math.floor(d.percentile * 100) / 100
-                    }${parseTier[1]}\`\n`;
-                } else if (d.percentile < 75) {
-                    output += `> \t\`${job[d.spec]} : ${
-                        Math.floor(d.percentile * 100) / 100
-                    }${parseTier[2]}\`\n`;
-                } else if (d.percentile < 95) {
-                    output += `> \t\`${job[d.spec]} : ${
-                        Math.floor(d.percentile * 100) / 100
-                    }${parseTier[3]}\`\n`;
-                } else if (d.percentile < 99) {
-                    output += `> \t\`${job[d.spec]} : ${
-                        Math.floor(d.percentile * 100) / 100
-                    }${parseTier[4]}\`\n`;
-                } else if (d.percentile < 100) {
-                    output += `> \t\`${job[d.spec]} : ${
-                        Math.floor(d.percentile * 100) / 100
-                    }${parseTier[5]}\`\n`;
-                } else {
-                    output += `> \t\`${job[d.spec]} : ${
-                        Math.floor(d.percentile * 100) / 100
-                    }${parseTier[6]}\`\n`;
-                }
-            });
-        });
-    } else {
-        output = 'ERR : 서버명에 문제가 있습니다.';
-    }
-    return output;
-}
-
-async function ParseUltimateAlexander(
-    serverName: string,
-    charName: string,
-    CheckMethod: boolean,
-) {
-    const output: string = `\`'${charName}'\`의 \`'절 알렉산더'\` 기록\n`;
-
-    return output + (await RankMarker(serverName, charName, 32, CheckMethod));
-}
-
-async function ParseEdenGate(
-    serverName: string,
-    charName: string,
-    CheckMethod: boolean,
-) {
-    const output: string = `\`'${charName}'\`의 \`'Eden's Gate'\` 기록\n`;
-    return output + (await RankMarker(serverName, charName, 29, CheckMethod));
-}
-
-async function ParseEdenVerse(
-    serverName: string,
-    charName: string,
-    CheckMethod: boolean,
-) {
-    const output: string = `\`'${charName}'\`의 \`'Eden's Verse'\` 기록\n`;
-    return output + (await RankMarker(serverName, charName, 33, CheckMethod));
-}
-// <---------------------------------------------------------------------------->
-
+// 프프로그 사용시 경고문
+const AlertText = new Discord.MessageEmbed()
+    .setColor('#0099ff')
+    .setTitle('경고문!')
+    .setDescription('주의사항 : 절대 부대내 다른유저 검색금지 / 무조건 본인것만 확인하기\n' +
+        '\n' +
+        '시비, 갈등조장의 원인 제공시 원인제공부대원 부대추방 / 봇삭제\n' +
+        '\n' +
+        '갈등조장\n' +
+        '예시1) A유저는 던전자체를 즐기며하는 플레이를 선호. B유저가 A유저의 프프로그를 검색 후 딜싸이클, 던전플레이훈수 등 원하지 않는 정보를 제공하며 압박감 형성\n' +
+        '\n' +
+        '예시2) A유저와 B유저간 분석을 통해 서로에게 도움을 주기로 합의는 했지만 의도치않은 문제발생으로인해 사이가 틀어질수있음. 둘의 문제점을 부대까지 끌고오게되는 경우\n' +
+        '\n' +
+        '예시3) B유저는 선의의 마음(B유저 본인의 마음)으로 프프로그 분석을 알려주고 가르쳐주지만 A유저 입장에선 엄청난 부담감, 수치심 느낄가능성이 큼.');
 
 // 유튜브 노래 재생을 위한 변수
 let voiceConnection: VoiceConnection | null = null;
@@ -313,40 +94,48 @@ client.on('ready', () => {
 });
 
 client.on('guildMemberAdd', member => {
-    const channel = member.guild.channels.cache.find(ch => ch.name === '테스트1');
+    const channel = member.guild.channels.cache.find(ch => ch.name === '자유채팅🔥');
     (channel as TextChannel)?.send(`식빵 굽는 ${member.displayName} 냥이가 왔어 쿠뽀! 환영해줘 쿠뽀!`);
 });
 
 client.on('message', async msg => {
-    // console.log(msg.content);
-    // const ffMsg: string[] = msg.content.split(' ');
-    // console.log(ffMsg[0]);
-    //
-    // if (ffMsg.length === 4 && ffMsg[3] === '-t') {
-    //     if (ffMsg[0] === '/ffeg') {
-    //         msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
-    //     } else if (ffMsg[0] === '/ffua') {
-    //         msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
-    //     } else if (ffMsg[0] === '/ffev') {
-    //         msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
-    //     } else if (ffMsg[0] === '/ff') {
-    //         msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
-    //         msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
-    //         msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
-    //     }
-    // } else if (ffMsg.length === 3) {
-    //     if (ffMsg[0] === '/ffeg') {
-    //         msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
-    //     } else if (ffMsg[0] === '/ffua') {
-    //         msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
-    //     } else if (ffMsg[0] === '/ffev') {
-    //         msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
-    //     } else if (ffMsg[0] === '/ff') {
-    //         msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
-    //         msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
-    //         msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
-    //     }
-    // }
+    console.log(msg.content);
+    const ffMsg: string[] = msg.content.split(' ');
+    console.log(ffMsg[0]);
+
+    if (ffMsg.length === 4 && ffMsg[3] === '-t') {
+        if (ffMsg[0] === '/ffeg') {
+            msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
+            msg.channel.send(AlertText);
+        } else if (ffMsg[0] === '/ffua') {
+            msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
+            msg.channel.send(AlertText);
+        } else if (ffMsg[0] === '/ffev') {
+            msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
+            msg.channel.send(AlertText);
+        } else if (ffMsg[0] === '/ff') {
+            msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
+            msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
+            msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
+            msg.channel.send(AlertText);
+        }
+    } else if (ffMsg.length === 3) {
+        if (ffMsg[0] === '/ffeg') {
+            msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
+            msg.channel.send(AlertText);
+        } else if (ffMsg[0] === '/ffua') {
+            msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
+            msg.channel.send(AlertText);
+        } else if (ffMsg[0] === '/ffev') {
+            msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
+            msg.channel.send(AlertText);
+        } else if (ffMsg[0] === '/ff') {
+            msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
+            msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
+            msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
+            msg.channel.send(AlertText);
+        }
+    }
 
 
     // Bot 을 들어오게 함
