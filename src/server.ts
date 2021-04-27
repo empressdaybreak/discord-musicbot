@@ -106,35 +106,63 @@ client.on('message', async msg => {
     //
     // if (ffMsg.length === 4 && ffMsg[3] === '-t') {
     //     if (ffMsg[0] === '/ffeg') {
-    //         msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
-    //         msg.channel.send(AlertText);
+    //         // msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
+    //         // msg.channel.send(AlertText);
+    //
+    //         msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
+    //         msg.author.send(AlertText);
     //     } else if (ffMsg[0] === '/ffua') {
-    //         msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
-    //         msg.channel.send(AlertText);
+    //         // msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
+    //         // msg.channel.send(AlertText);
+    //
+    //         msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
+    //         msg.author.send(AlertText);
     //     } else if (ffMsg[0] === '/ffev') {
-    //         msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
-    //         msg.channel.send(AlertText);
+    //         // msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
+    //         // msg.channel.send(AlertText);
+    //
+    //         msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
+    //         msg.author.send(AlertText);
     //     } else if (ffMsg[0] === '/ff') {
-    //         msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
-    //         msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
-    //         msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
-    //         msg.channel.send(AlertText);
+    //         // msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
+    //         // msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
+    //         // msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
+    //         // msg.channel.send(AlertText);
+    //
+    //         msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
+    //         msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
+    //         msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
+    //         msg.author.send(AlertText);
     //     }
     // } else if (ffMsg.length === 3) {
     //     if (ffMsg[0] === '/ffeg') {
-    //         msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
-    //         msg.channel.send(AlertText);
+    //         // msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
+    //         // msg.channel.send(AlertText);
+    //
+    //         msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
+    //         msg.author.send(AlertText);
     //     } else if (ffMsg[0] === '/ffua') {
-    //         msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
-    //         msg.channel.send(AlertText);
+    //         // msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
+    //         // msg.channel.send(AlertText);
+    //
+    //         msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
+    //         msg.author.send(AlertText);
     //     } else if (ffMsg[0] === '/ffev') {
-    //         msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
-    //         msg.channel.send(AlertText);
+    //         // msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
+    //         // msg.channel.send(AlertText);
+    //
+    //         msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
+    //         msg.author.send(AlertText);
     //     } else if (ffMsg[0] === '/ff') {
-    //         msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
-    //         msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
-    //         msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
-    //         msg.channel.send(AlertText);
+    //         // msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
+    //         // msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
+    //         // msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
+    //         // msg.channel.send(AlertText);
+    //
+    //         msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
+    //         msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
+    //         msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
+    //         msg.author.send(AlertText);
     //     }
     // }
 
