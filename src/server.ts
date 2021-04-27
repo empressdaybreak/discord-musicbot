@@ -74,7 +74,7 @@ const musicPlay = async () => {
         await ytdl(video.link, {filter: "audioonly"}),
         {
             type: 'opus',
-            highWaterMark: 1<<25,
+            highWaterMark: 1<<32,
         }
     ) || null;
 
@@ -180,6 +180,7 @@ client.on('message', async msg => {
 
     // Bot 을 나가게 함
     if (msg.content === '나가줘' || msg.content === ';;leave') {
+        musicQueue = [];
         await msg.channel.send('이만 가볼께 쿠뽀!');
         voiceConnection?.disconnect();
     }
