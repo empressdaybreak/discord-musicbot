@@ -99,43 +99,44 @@ client.on('guildMemberAdd', member => {
 });
 
 client.on('message', async msg => {
-    console.log(msg.content);
-    const ffMsg: string[] = msg.content.split(' ');
-    console.log(ffMsg[0]);
-
-    if (ffMsg.length === 4 && ffMsg[3] === '-t') {
-        if (ffMsg[0] === '/ffeg') {
-            msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
-            msg.channel.send(AlertText);
-        } else if (ffMsg[0] === '/ffua') {
-            msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
-            msg.channel.send(AlertText);
-        } else if (ffMsg[0] === '/ffev') {
-            msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
-            msg.channel.send(AlertText);
-        } else if (ffMsg[0] === '/ff') {
-            msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
-            msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
-            msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
-            msg.channel.send(AlertText);
-        }
-    } else if (ffMsg.length === 3) {
-        if (ffMsg[0] === '/ffeg') {
-            msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
-            msg.channel.send(AlertText);
-        } else if (ffMsg[0] === '/ffua') {
-            msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
-            msg.channel.send(AlertText);
-        } else if (ffMsg[0] === '/ffev') {
-            msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
-            msg.channel.send(AlertText);
-        } else if (ffMsg[0] === '/ff') {
-            msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
-            msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
-            msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
-            msg.channel.send(AlertText);
-        }
-    }
+    console.log('유저: ', msg.author.tag);
+    console.log('채팅 내용: ', msg.content);
+    // const ffMsg: string[] = msg.content.split(' ');
+    // console.log(ffMsg[0]);
+    //
+    // if (ffMsg.length === 4 && ffMsg[3] === '-t') {
+    //     if (ffMsg[0] === '/ffeg') {
+    //         msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
+    //         msg.channel.send(AlertText);
+    //     } else if (ffMsg[0] === '/ffua') {
+    //         msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
+    //         msg.channel.send(AlertText);
+    //     } else if (ffMsg[0] === '/ffev') {
+    //         msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
+    //         msg.channel.send(AlertText);
+    //     } else if (ffMsg[0] === '/ff') {
+    //         msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
+    //         msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
+    //         msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
+    //         msg.channel.send(AlertText);
+    //     }
+    // } else if (ffMsg.length === 3) {
+    //     if (ffMsg[0] === '/ffeg') {
+    //         msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
+    //         msg.channel.send(AlertText);
+    //     } else if (ffMsg[0] === '/ffua') {
+    //         msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
+    //         msg.channel.send(AlertText);
+    //     } else if (ffMsg[0] === '/ffev') {
+    //         msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
+    //         msg.channel.send(AlertText);
+    //     } else if (ffMsg[0] === '/ff') {
+    //         msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
+    //         msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
+    //         msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
+    //         msg.channel.send(AlertText);
+    //     }
+    // }
 
 
     // Bot 을 들어오게 함
