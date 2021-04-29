@@ -101,6 +101,7 @@ client.on('guildMemberAdd', member => {
 client.on('message', async msg => {
     console.log('유저: ', msg.author.tag);
     console.log('채팅 내용: ', msg.content);
+
     // const ffMsg: string[] = msg.content.split(' ');
     // console.log(ffMsg[0]);
     //
@@ -232,6 +233,8 @@ client.on('message', async msg => {
 
             await musicPlay();
         } else {
+            isPlaying = false;
+            streamDispatcher?.destroy();
             await msg.channel.send("목록에 노래가 없어 쿠뽀!");
         }
 
