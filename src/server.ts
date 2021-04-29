@@ -180,7 +180,7 @@ client.on('message', async msg => {
 
     // Bot 을 나가게 함
     if (msg.content === '나가줘' || msg.content === ';;leave') {
-        musicQueue = [];
+        isPlaying = false;
         await msg.channel.send('이만 가볼께 쿠뽀!');
         voiceConnection?.disconnect();
     }
