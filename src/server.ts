@@ -172,7 +172,7 @@ client.on('message', async msg => {
     if (msg.content === ';;라리호' || msg.content === ';;join') {
         channel = msg.channel;
         if(!msg.member?.voice.channel) {
-            await msg.channel.send('채널에는 아무도 없는것 같다 쿠뽀!');
+            await msg.channel.send('채널에는 먼저 들어와줘 쿠뽀!');
         } else {
             await msg.channel.send('무슨 노래를 재생해 쿠뽀?');
             voiceConnection = await msg.member?.voice.channel?.join();
@@ -182,24 +182,29 @@ client.on('message', async msg => {
     // Bot 을 나가게 함
     if (msg.content === '나가줘' || msg.content === ';;leave') {
         isPlaying = false;
+        musicQueue = [];
         await msg.channel.send('이만 가볼께 쿠뽀!');
         voiceConnection?.disconnect();
     }
 
     // 음악 검색을 함
     if (msg.content.startsWith(';;f')) {
-        const term = msg.content.replace(/^;;f\s*/, '');
-        const searchResults = await searchYouTube(term);
-        let message = '';
+        if(!msg.member?.voice.channel) {
+            await msg.channel.send('채널에는 먼저 들어와줘 쿠뽀!');
+        } else {
+            const term = msg.content.replace(/^;;f\s*/, '');
+            const searchResults = await searchYouTube(term);
+            let message = '';
 
-        // 검색 결과가 musicList 에 저장됨
-        musicList = searchResults;
+            // 검색 결과가 musicList 에 저장됨
+            musicList = searchResults;
 
-        searchResults.forEach((item, index) => {
-            message += `${index + 1}번 ${item.title}\n`;
-        })
+            searchResults.forEach((item, index) => {
+                message += `${index + 1}번 ${item.title}\n`;
+            })
 
-        await msg.channel.send(`검색결과가 나왔어 쿠뽀!\n${message}`);
+            await msg.channel.send(`검색결과가 나왔어 쿠뽀!\n${message}`);
+        }
     }
 
 
