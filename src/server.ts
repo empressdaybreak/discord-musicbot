@@ -9,7 +9,7 @@ const Discord = require("discord.js");
 // 프프로그 사용시 경고문
 const AlertText = new Discord.MessageEmbed()
     .setColor('#0099ff')
-    .setTitle('경고문!')
+    .setTitle('잠깐만요!')
     .setDescription('주의사항 : 절대 부대내 다른유저 검색금지 / 무조건 본인것만 확인하기\n' +
         '\n' +
         '시비, 갈등조장의 원인 제공시 원인제공부대원 부대추방 / 봇삭제\n' +
@@ -19,7 +19,18 @@ const AlertText = new Discord.MessageEmbed()
         '\n' +
         '예시2) A유저와 B유저간 분석을 통해 서로에게 도움을 주기로 합의는 했지만 의도치않은 문제발생으로인해 사이가 틀어질수있음. 둘의 문제점을 부대까지 끌고오게되는 경우\n' +
         '\n' +
-        '예시3) B유저는 선의의 마음(B유저 본인의 마음)으로 프프로그 분석을 알려주고 가르쳐주지만 A유저 입장에선 엄청난 부담감, 수치심 느낄가능성이 큼.');
+        '예시3) B유저는 선의의 마음(B유저 본인의 마음)으로 프프로그 분석을 알려주고 가르쳐주지만 A유저 입장에선 엄청난 부담감, 수치심 느낄가능성이 큼. \n' +
+        '\n' +
+        '검색자의 검색기록은 지우셔도 남아있습니다!'
+    );
+
+const UpdateText = new Discord.MessageEmbed()
+    .setColor('#0099ff')
+    .setTitle('쿠뽀 레터 📩')
+    .setDescription('전에 "새로운달" 님이 말씀해주신 부분을 반영했어 쿠뽀!\n \n' +
+        '"음악방" 채널에서만 "츄르봇" 을 부를 수 있도록 변경했어 쿠뽀!\n \n' +
+        '언제든 불편한 점이 있다면 부담없이 말해줘 쿠뽀!'
+    );
 
 // 유튜브 노래 재생을 위한 변수
 let voiceConnection: VoiceConnection | null = null;
@@ -99,80 +110,87 @@ client.on('guildMemberAdd', member => {
 });
 
 client.on('message', async msg => {
-    console.log('유저: ', msg.author.tag);
-    console.log('채팅 내용: ', msg.content);
+    // 혹시나 모를 일을 위해 메시지 정보 수집
+    console.log(`${msg.author.tag}: ${msg.content}`);
 
-    // const ffMsg: string[] = msg.content.split(' ');
-    // console.log(ffMsg[0]);
-    //
-    // if (ffMsg.length === 4 && ffMsg[3] === '-t') {
-    //     if (ffMsg[0] === '/ffeg') {
-    //         // msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
-    //         // msg.channel.send(AlertText);
-    //
-    //         msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
-    //         msg.author.send(AlertText);
-    //     } else if (ffMsg[0] === '/ffua') {
-    //         // msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
-    //         // msg.channel.send(AlertText);
-    //
-    //         msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
-    //         msg.author.send(AlertText);
-    //     } else if (ffMsg[0] === '/ffev') {
-    //         // msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
-    //         // msg.channel.send(AlertText);
-    //
-    //         msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
-    //         msg.author.send(AlertText);
-    //     } else if (ffMsg[0] === '/ff') {
-    //         // msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
-    //         // msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
-    //         // msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
-    //         // msg.channel.send(AlertText);
-    //
-    //         msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
-    //         msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
-    //         msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
-    //         msg.author.send(AlertText);
-    //     }
-    // } else if (ffMsg.length === 3) {
-    //     if (ffMsg[0] === '/ffeg') {
-    //         // msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
-    //         // msg.channel.send(AlertText);
-    //
-    //         msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
-    //         msg.author.send(AlertText);
-    //     } else if (ffMsg[0] === '/ffua') {
-    //         // msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
-    //         // msg.channel.send(AlertText);
-    //
-    //         msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
-    //         msg.author.send(AlertText);
-    //     } else if (ffMsg[0] === '/ffev') {
-    //         // msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
-    //         // msg.channel.send(AlertText);
-    //
-    //         msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
-    //         msg.author.send(AlertText);
-    //     } else if (ffMsg[0] === '/ff') {
-    //         // msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
-    //         // msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
-    //         // msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
-    //         // msg.channel.send(AlertText);
-    //
-    //         msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
-    //         msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
-    //         msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
-    //         msg.author.send(AlertText);
-    //     }
-    // }
+    const ffMsg: string[] = msg.content.split(' ');
+    console.log(ffMsg[0]);
 
+    if (msg.content === ';;update') {
+        await msg.channel.send(UpdateText);
+    }
+
+    if (ffMsg.length === 4 && ffMsg[3] === '-t') {
+        if (ffMsg[0] === '/ffeg') {
+            // msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
+            // msg.channel.send(AlertText);
+
+            msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
+            msg.author.send(AlertText);
+        } else if (ffMsg[0] === '/ffua') {
+            // msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
+            // msg.channel.send(AlertText);
+
+            msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
+            msg.author.send(AlertText);
+        } else if (ffMsg[0] === '/ffev') {
+            // msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
+            // msg.channel.send(AlertText);
+
+            msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
+            msg.author.send(AlertText);
+        } else if (ffMsg[0] === '/ff') {
+            // msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
+            // msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
+            // msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
+            // msg.channel.send(AlertText);
+
+            msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
+            msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
+            msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
+            msg.author.send(AlertText);
+        }
+    } else if (ffMsg.length === 3) {
+        if (ffMsg[0] === '/ffeg') {
+            // msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
+            // msg.channel.send(AlertText);
+
+            msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
+            msg.author.send(AlertText);
+        } else if (ffMsg[0] === '/ffua') {
+            // msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
+            // msg.channel.send(AlertText);
+
+            msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
+            msg.author.send(AlertText);
+        } else if (ffMsg[0] === '/ffev') {
+            // msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
+            // msg.channel.send(AlertText);
+
+            msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
+            msg.author.send(AlertText);
+        } else if (ffMsg[0] === '/ff') {
+            // msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
+            // msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
+            // msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
+            // msg.channel.send(AlertText);
+
+            msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
+            msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
+            msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
+            msg.author.send(AlertText);
+        }
+    }
 
     // Bot 을 들어오게 함
     if (msg.content === ';;라리호' || msg.content === ';;join') {
+        const channelIdNumber = msg.member?.voice.channelID;
         channel = msg.channel;
-        if(!msg.member?.voice.channel) {
+
+        if (!msg.member?.voice.channel) {
             await msg.channel.send('채널에는 먼저 들어와줘 쿠뽀!');
+        } else if (channelIdNumber != '764505140639563799') {
+            await msg.channel.send('음악방🎵 으로 이동해줘 쿠뽀!');
         } else {
             await msg.channel.send('무슨 노래를 재생해 쿠뽀?');
             voiceConnection = await msg.member?.voice.channel?.join();
