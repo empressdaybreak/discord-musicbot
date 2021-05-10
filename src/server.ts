@@ -2,6 +2,7 @@ import {Client, DMChannel, NewsChannel, StreamDispatcher, TextChannel, VoiceConn
 import ytdl from 'ytdl-core-discord';
 import youtubeSearch, { YouTubeSearchResults } from 'youtube-search';
 import {ParseUltimateAlexander,  ParseEdenGate, ParseEdenVerse} from './FFLogs/FFLogsFunc';
+import {checkServerIdentity} from "tls";
 
 const client = new Client();
 const Discord = require("discord.js");
@@ -114,10 +115,19 @@ client.on('message', async msg => {
     console.log(`${msg.author.tag}: ${msg.content}`);
 
     const ffMsg: string[] = msg.content.split(' ');
-    console.log(ffMsg[0]);
 
-    if (msg.content === ';;update') {
-        await msg.channel.send(UpdateText);
+    // 업데이트 쿠뽀 레터 발행용 코드
+    // if (msg.content === ';;update') {
+    //     await msg.channel.send(UpdateText);
+    // }
+
+    // 츄르봇으로 직접 말할 수 있는 임시 코드
+    if (msg.content.startsWith("!!talk")) {
+        const word = msg.content.replace(/^!!talk\s*/, '');
+        const channel_notice = client.channels.cache.find(ch => ch.id === '764505214953979935');
+        console.log(word);
+
+        (channel_notice as TextChannel).send(word);
     }
 
     if (ffMsg.length === 4 && ffMsg[3] === '-t') {
