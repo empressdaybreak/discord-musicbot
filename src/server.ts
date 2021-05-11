@@ -121,10 +121,19 @@ client.on('message', async msg => {
     //     await msg.channel.send(UpdateText);
     // }
 
-    // 츄르봇으로 직접 말할 수 있는 임시 코드
-    if (msg.content.startsWith("!!talk")) {
-        const word = msg.content.replace(/^!!talk\s*/, '');
+    // 츄르봇으로 음악방 채널에 직접 말할 수 있는 임시 코드
+    if (msg.content.startsWith("!!music")) {
+        const word = msg.content.replace(/^!!music\s*/, '');
         const channel_notice = client.channels.cache.find(ch => ch.id === '764505214953979935');
+        console.log(word);
+
+        (channel_notice as TextChannel).send(word);
+    }
+
+    // 츄르봇으로 자유채팅 채널에 직접 말할 수 있는 임시 코드
+    if (msg.content.startsWith("!!free")) {
+        const word = msg.content.replace(/^!!free\s*/, '');
+        const channel_notice = client.channels.cache.find(ch => ch.id === '764503355899904012');
         console.log(word);
 
         (channel_notice as TextChannel).send(word);
