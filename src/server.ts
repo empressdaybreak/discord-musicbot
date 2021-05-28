@@ -1,14 +1,24 @@
-import {Client, DMChannel, NewsChannel, StreamDispatcher, TextChannel, VoiceConnection} from 'discord.js';
+import {
+    Client,
+    DMChannel,
+    NewsChannel,
+    StreamDispatcher,
+    TextChannel,
+    VoiceChannel,
+    VoiceConnection,
+    MessageEmbed
+} from 'discord.js';
 import ytdl from 'ytdl-core-discord';
 import youtubeSearch, { YouTubeSearchResults } from 'youtube-search';
 import {ParseUltimateAlexander,  ParseEdenGate, ParseEdenVerse} from './FFLogs/FFLogsFunc';
-import {checkServerIdentity} from "tls";
+import Timeout = NodeJS.Timeout;
 
 const client = new Client();
-const Discord = require("discord.js");
+
+let RandomResult: string[] = [];
 
 // 프프로그 사용시 경고문
-const AlertText = new Discord.MessageEmbed()
+const AlertText = new MessageEmbed()
     .setColor('#0099ff')
     .setTitle('잠깐만요!')
     .setDescription('주의사항 : 절대 부대내 다른유저 검색금지 / 무조건 본인것만 확인하기\n' +
@@ -25,11 +35,13 @@ const AlertText = new Discord.MessageEmbed()
         '검색자의 검색기록은 지우셔도 남아있습니다!'
     );
 
-const UpdateText = new Discord.MessageEmbed()
+// 디스코드 봇 업데이트 문구 출력
+const UpdateText = new MessageEmbed()
     .setColor('#0099ff')
     .setTitle('쿠뽀 레터 📩')
-    .setDescription('전에 "새로운달" 님이 말씀해주신 부분을 반영했어 쿠뽀!\n \n' +
-        '"음악방" 채널에서만 "츄르봇" 을 부를 수 있도록 변경했어 쿠뽀!\n \n' +
+    .setDescription('오랜만에 "쿠뽀 레터" 를 발행하러 왔어~ 쿠뽀!\n \n' +
+        '"츄르봇" 혼자 채널에 남겨둔 상태로 깜빡하고 떠나는 경우가 있어서, "츄르봇" 혼자 나갈 수 있게 되었어~ 쿠뽀!\n \n' +
+        '이제 앞으로 "leave" 명령어를 안써도 혼자 나갈 수 있으니까 그냥 나가도 괜찮아~ 쿠뽀..\n \n' +
         '언제든 불편한 점이 있다면 부담없이 말해줘 쿠뽀!'
     );
 
@@ -38,6 +50,8 @@ let voiceConnection: VoiceConnection | null = null;
 let channel: TextChannel | DMChannel | NewsChannel | null = null;
 let streamDispatcher: StreamDispatcher | null = null;
 let isPlaying: boolean = false;
+
+let intervalTimer: Timeout | null = null;
 
 interface YoutubeVideo {
     link: string;
@@ -100,6 +114,24 @@ const musicPlay = async () => {
     });
 };
 
+// 채널에 사람이 있는지 없는지 상시 체크
+const BotObserver = async (channel: VoiceChannel) => {
+    if (channel.members.size - 1 === 0) {
+        clearInterval(intervalTimer!!);
+        BotDisconnect();
+    } else {
+        return;
+    }
+}
+
+// 봇이 채널에서 떠날 때 사용
+const BotDisconnect = async () => {
+    isPlaying = false;
+    musicQueue = [];
+    channel?.send('이만 가볼께 쿠뽀!');
+    voiceConnection?.disconnect();
+}
+
 client.on('ready', () => {
     console.log(`${client.user!.tag}에 로그인하였습니다!`);
     client.user?.setActivity('식빵 굽기', { type: 'PLAYING' });
@@ -117,9 +149,10 @@ client.on('message', async msg => {
     const ffMsg: string[] = msg.content.split(' ');
 
     // 업데이트 쿠뽀 레터 발행용 코드
-    // if (msg.content === ';;update') {
-    //     await msg.channel.send(UpdateText);
-    // }
+    if (msg.content === '!!update') {
+        const channel_update = client.channels.cache.find(ch => ch.id === '764505214953979935');
+        (channel_update as TextChannel).send(UpdateText);
+    }
 
     // 츄르봇으로 음악방 채널에 직접 말할 수 있는 임시 코드
     if (msg.content.startsWith("!!music")) {
@@ -137,6 +170,29 @@ client.on('message', async msg => {
         console.log(word);
 
         (channel_notice as TextChannel).send(word);
+    }
+
+    // 원하는 인원수 만큼 랜덤으로 파티원을 묶어 파티를 만들어줌
+    if (msg.content.startsWith(';;파티')) {
+        const word = msg.content.replace(/^;;파티\s*/, '').split(' ');
+        const number = Number(word[0])+1;
+        const calc = Number(word.length - number);
+
+        word.shift();
+
+        while (word.length > calc) {
+            const move = word.splice(Math.floor(Math.random() * word.length), 1)[0];
+            RandomResult.push(move);
+        }
+
+        const result = RandomResult.join(' ');
+
+        if (result.length != 0) {
+            msg.channel.send(`${result} 가 한 파티야~ 쿠뽀!`);
+        } else {
+            msg.channel.send('다시 적어 줘~ 쿠뽀!');
+        }
+        RandomResult = [];
     }
 
     if (ffMsg.length === 4 && ffMsg[3] === '-t') {
@@ -213,15 +269,15 @@ client.on('message', async msg => {
         } else {
             await msg.channel.send('무슨 노래를 재생해 쿠뽀?');
             voiceConnection = await msg.member?.voice.channel?.join();
+
+            const channel = msg.member?.voice.channel;
+            intervalTimer = setInterval(() => { BotObserver(channel) }, 5000);
         }
     }
 
     // Bot 을 나가게 함
     if (msg.content === '나가줘' || msg.content === ';;leave') {
-        isPlaying = false;
-        musicQueue = [];
-        await msg.channel.send('이만 가볼께 쿠뽀!');
-        voiceConnection?.disconnect();
+        await BotDisconnect();
     }
 
     // 음악 검색을 함
