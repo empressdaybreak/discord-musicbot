@@ -151,6 +151,11 @@ async function RankMarker(
         70: 'Ifrit and Garuda',
         71: 'The Idol of Darkness',
         72: 'Shiva',
+        73: 'Cloud of Darkness',
+        74: 'Shadowkeeper',
+        75: 'Fatebreaker',
+        76: "Eden's Promise",
+        77: 'Oracle of Darkness',
         1050: 'The Epic of Alexander',
     };
 
@@ -230,4 +235,13 @@ export async function ParseEdenVerse(
 ) {
     const output: string = `\`'${charName}'\`의 \`'Eden's Verse'\` 기록\n`;
     return output + (await RankMarker(serverName, charName, 33, CheckMethod));
+}
+
+export async function ParseEdenPromise(
+    serverName: string,
+    charName: string,
+    CheckMethod: boolean,
+) {
+    const output: string = `\`'${charName}'\`의 \`'Eden's Promise'\` 기록\n`;
+    return output + (await RankMarker(serverName, charName, 38, CheckMethod));
 }

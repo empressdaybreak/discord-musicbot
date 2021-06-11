@@ -10,7 +10,7 @@ import {
 } from 'discord.js';
 import ytdl from 'ytdl-core-discord';
 import youtubeSearch, { YouTubeSearchResults } from 'youtube-search';
-import {ParseUltimateAlexander,  ParseEdenGate, ParseEdenVerse} from './FFLogs/FFLogsFunc';
+import {ParseUltimateAlexander, ParseEdenGate, ParseEdenVerse, ParseEdenPromise} from './FFLogs/FFLogsFunc';
 import Timeout = NodeJS.Timeout;
 
 const client = new Client();
@@ -51,7 +51,11 @@ let channel: TextChannel | DMChannel | NewsChannel | null = null;
 let streamDispatcher: StreamDispatcher | null = null;
 let isPlaying: boolean = false;
 
+// setInterval 을 관리하기 위해 변수 선언
 let intervalTimer: Timeout | null = null;
+
+// setTimeOut 을 관리하기 위해 변수 선언
+let timeoutTimer: Timeout | null = null;
 
 interface YoutubeVideo {
     link: string;
@@ -118,9 +122,16 @@ const musicPlay = async () => {
 const BotObserver = async (channel: VoiceChannel) => {
     if (channel.members.size - 1 === 0) {
         clearInterval(intervalTimer!!);
-        BotDisconnect();
+        setTimeout(() => { ChannelUserCheck(channel) }, 5000);
+    }
+}
+
+// 봇이 나가기전에 채널에 유저가 있는지 한번 더 체크
+const ChannelUserCheck = async (channel: VoiceChannel) => {
+    if (channel.members.size - 1 === 0) {
+        await BotDisconnect();
     } else {
-        return;
+        intervalTimer = setInterval(() => { BotObserver(channel) }, 1000);
     }
 }
 
@@ -132,21 +143,28 @@ const BotDisconnect = async () => {
     voiceConnection?.disconnect();
 }
 
+// 봇이 켜지고 준비가 되면 실행
 client.on('ready', () => {
     console.log(`${client.user!.tag}에 로그인하였습니다!`);
     client.user?.setActivity('식빵 굽기', { type: 'PLAYING' });
 });
 
-client.on('guildMemberAdd', member => {
-    const channel = member.guild.channels.cache.find(ch => ch.name === '자유채팅🔥');
-    (channel as TextChannel)?.send(`식빵 굽는 ${member.displayName} 냥이가 왔어 쿠뽀! 환영해줘 쿠뽀!`);
-});
+// 새로운 멤버가 오면 환영메시지
+// client.on('guildMemberAdd', member => {
+//     const channel = member.guild.channels.cache.find(ch => ch.name === '자유채팅🔥');
+//     (channel as TextChannel)?.send(`식빵 굽는 ${member.displayName} 냥이가 왔어 쿠뽀! 환영해줘 쿠뽀!`);
+// });
 
 client.on('message', async msg => {
     // 혹시나 모를 일을 위해 메시지 정보 수집
     console.log(`${msg.author.tag}: ${msg.content}`);
 
     const ffMsg: string[] = msg.content.split(' ');
+
+    if(msg.content === 'test') {
+        const test = msg.member?.voice.channel;
+        console.log(test?.members.size);
+    }
 
     // 업데이트 쿠뽀 레터 발행용 코드
     if (msg.content === '!!update') {
@@ -196,63 +214,19 @@ client.on('message', async msg => {
     }
 
     if (ffMsg.length === 4 && ffMsg[3] === '-t') {
-        if (ffMsg[0] === '/ffeg') {
-            // msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
-            // msg.channel.send(AlertText);
-
-            msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
-            msg.author.send(AlertText);
-        } else if (ffMsg[0] === '/ffua') {
-            // msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
-            // msg.channel.send(AlertText);
-
-            msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
-            msg.author.send(AlertText);
-        } else if (ffMsg[0] === '/ffev') {
-            // msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
-            // msg.channel.send(AlertText);
-
-            msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
-            msg.author.send(AlertText);
-        } else if (ffMsg[0] === '/ff') {
-            // msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
-            // msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
-            // msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
-            // msg.channel.send(AlertText);
-
+        if (ffMsg[0] === '/ff') {
             msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
             msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
             msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
+            msg.author.send(await ParseEdenPromise(ffMsg[1], ffMsg[2], true));
             msg.author.send(AlertText);
         }
     } else if (ffMsg.length === 3) {
-        if (ffMsg[0] === '/ffeg') {
-            // msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
-            // msg.channel.send(AlertText);
-
-            msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
-            msg.author.send(AlertText);
-        } else if (ffMsg[0] === '/ffua') {
-            // msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
-            // msg.channel.send(AlertText);
-
-            msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
-            msg.author.send(AlertText);
-        } else if (ffMsg[0] === '/ffev') {
-            // msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
-            // msg.channel.send(AlertText);
-
-            msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
-            msg.author.send(AlertText);
-        } else if (ffMsg[0] === '/ff') {
-            // msg.channel.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
-            // msg.channel.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
-            // msg.channel.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
-            // msg.channel.send(AlertText);
-
+        if (ffMsg[0] === '/ff') {
             msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
             msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
             msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
+            msg.author.send(await ParseEdenPromise(ffMsg[1], ffMsg[2], true));
             msg.author.send(AlertText);
         }
     }
@@ -264,14 +238,16 @@ client.on('message', async msg => {
 
         if (!msg.member?.voice.channel) {
             await msg.channel.send('채널에는 먼저 들어와줘 쿠뽀!');
-        } else if (channelIdNumber != '764505140639563799') {
-            await msg.channel.send('음악방🎵 으로 이동해줘 쿠뽀!');
-        } else {
+        }
+        // else if (channelIdNumber != '764505140639563799') {
+        //     await msg.channel.send('음악방🎵 으로 이동해줘 쿠뽀!');
+        // }
+        else {
             await msg.channel.send('무슨 노래를 재생해 쿠뽀?');
             voiceConnection = await msg.member?.voice.channel?.join();
 
             const channel = msg.member?.voice.channel;
-            intervalTimer = setInterval(() => { BotObserver(channel) }, 5000);
+            intervalTimer = setInterval(() => { BotObserver(channel) }, 1000);
         }
     }
 
