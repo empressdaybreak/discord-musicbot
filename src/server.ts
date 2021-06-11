@@ -54,9 +54,6 @@ let isPlaying: boolean = false;
 // setInterval 을 관리하기 위해 변수 선언
 let intervalTimer: Timeout | null = null;
 
-// setTimeOut 을 관리하기 위해 변수 선언
-let timeoutTimer: Timeout | null = null;
-
 interface YoutubeVideo {
     link: string;
     title: string;
@@ -122,7 +119,7 @@ const musicPlay = async () => {
 const BotObserver = async (channel: VoiceChannel) => {
     if (channel.members.size - 1 === 0) {
         clearInterval(intervalTimer!!);
-        setTimeout(() => { ChannelUserCheck(channel) }, 5000);
+        setTimeout(() => { ChannelUserCheck(channel) }, 180000);
     }
 }
 
@@ -238,11 +235,9 @@ client.on('message', async msg => {
 
         if (!msg.member?.voice.channel) {
             await msg.channel.send('채널에는 먼저 들어와줘 쿠뽀!');
-        }
-        // else if (channelIdNumber != '764505140639563799') {
-        //     await msg.channel.send('음악방🎵 으로 이동해줘 쿠뽀!');
-        // }
-        else {
+        } else if (channelIdNumber != '764505140639563799') {
+            await msg.channel.send('음악방🎵 으로 이동해줘 쿠뽀!');
+        } else {
             await msg.channel.send('무슨 노래를 재생해 쿠뽀?');
             voiceConnection = await msg.member?.voice.channel?.join();
 
