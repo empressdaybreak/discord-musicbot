@@ -6,7 +6,7 @@ import {
     TextChannel,
     VoiceChannel,
     VoiceConnection,
-    MessageEmbed
+    MessageEmbed,
 } from 'discord.js';
 import ytdl from 'ytdl-core-discord';
 import youtubeSearch, { YouTubeSearchResults } from 'youtube-search';
@@ -158,11 +158,6 @@ client.on('message', async msg => {
 
     const ffMsg: string[] = msg.content.split(' ');
 
-    if(msg.content === 'test') {
-        const test = msg.member?.voice.channel;
-        console.log(test?.members.size);
-    }
-
     // 업데이트 쿠뽀 레터 발행용 코드
     if (msg.content === '!!update') {
         const channel_update = client.channels.cache.find(ch => ch.id === '764505214953979935');
@@ -208,6 +203,57 @@ client.on('message', async msg => {
             msg.channel.send('다시 적어 줘~ 쿠뽀!');
         }
         RandomResult = [];
+    }
+
+    // 지도 이미지를 바로 보여주는 기능
+    if (msg.content.startsWith(";;지도")) {
+        const word = msg.content.replace(/^;;지도\s*/, '').split(' ');
+
+        console.log(word);
+
+        if (word[0] === '레이크랜드') {
+            msg.channel.send({
+                files: [
+                    './RakeLand.png',
+                    './RakeLand_Parse.png',
+                ]
+            })
+        } else if (word[0] === '아므아랭') {
+            msg.channel.send({
+                files: [
+                    './Armarang.png',
+                    './Armarang_Parse.png',
+                ]
+            })
+        } else if (word[0] === '콜루시아') {
+            msg.channel.send({
+                files: [
+                    './Colusia.png',
+                    './Colusia_Parse.png',
+                ]
+            })
+        } else if (word[0] === '라케티카') {
+            msg.channel.send({
+                files: [
+                    './Laketica.png',
+                    './Laketica_Parse.png',
+                ]
+            })
+        } else if (word[0] === '일메그') {
+            msg.channel.send({
+                files: [
+                    './Mag.png',
+                    './Mag_Parse.png',
+                ]
+            })
+        } else if (word[0] === '템페스트') {
+            msg.channel.send({
+                files: [
+                    './Tempest.png',
+                    './Tempest_Parse.png',
+                ]
+            })
+        }
     }
 
     if (ffMsg.length === 4 && ffMsg[3] === '-t') {
