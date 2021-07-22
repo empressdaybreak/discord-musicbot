@@ -234,9 +234,11 @@ client.on('message', async msg => {
 
         if (!msg.member?.voice.channel) {
             await msg.channel.send('채널에는 먼저 들어와줘 쿠뽀!');
-        } else if (channelIdNumber != '764505140639563799') {
-            await msg.channel.send('음악방🎵 으로 이동해줘 쿠뽀!');
-        } else {
+        }
+        // else if (channelIdNumber != '764505140639563799') {
+        //     await msg.channel.send('음악방🎵 으로 이동해줘 쿠뽀!');
+        // }
+        else {
             await msg.channel.send('무슨 노래를 재생해 쿠뽀?');
             voiceConnection = await msg.member?.voice.channel?.join();
 
@@ -277,9 +279,29 @@ client.on('message', async msg => {
     // 노래 재생 부분
     if (msg.content.startsWith(";;p")) {
         const numberTerm = parseInt(msg.content.replace(/^;;p\s*/, ''), 10) - 1;
+        const wordTerm = msg.content.replace(/^;;p\s*/, '');
 
         if (!voiceConnection) {
             await msg.channel.send('채널에는 아무도 없는것 같다 쿠뽀!');
+        } else if (wordTerm.startsWith('http')) {
+            // 검색하지 않고 바로 링크를 입력했을 때 바로 재생 되도록 함
+            if (wordTerm.includes('youtube') === false) {
+                await msg.channel.send('유튜브 링크로만 부탁해 쿠뽀!');
+            } else if (!isPlaying) {
+                musicQueue.push({
+                    link: wordTerm,
+                    title: '링크로 추가한 곡',
+                });
+
+                await musicPlay();
+            } else {
+                musicQueue.push({
+                    link: wordTerm,
+                    title: '링크로 추가한 곡',
+                });
+
+                await msg.channel.send(`"링크로 추가한 곡" 노래를 목록에 추가 했어 쿠뽀!`);
+            }
         } else if (musicList.length === 0) {
             await msg.channel.send('먼저 노래를 예약해줘 쿠뽀!');
         } else if (!isPlaying) {
