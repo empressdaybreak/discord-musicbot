@@ -12,6 +12,7 @@ import ytdl from 'ytdl-core-discord';
 import youtubeSearch, { YouTubeSearchResults } from 'youtube-search';
 import {ParseUltimateAlexander, ParseEdenGate, ParseEdenVerse, ParseEdenPromise} from './FFLogs/FFLogsFunc';
 import Timeout = NodeJS.Timeout;
+import {findMapImage} from "./FFMap/FFMapFunc";
 
 const client = new Client();
 
@@ -198,61 +199,15 @@ client.on('message', async msg => {
         const result = RandomResult.join(' ');
 
         if (result.length != 0) {
-            msg.channel.send(`${result} 가 한 파티야~ 쿠뽀!`);
+            await msg.channel.send(`${result} 가 한 파티야~ 쿠뽀!`);
         } else {
-            msg.channel.send('다시 적어 줘~ 쿠뽀!');
+            await msg.channel.send('다시 적어 줘~ 쿠뽀!');
         }
         RandomResult = [];
     }
 
     // 지도 이미지를 바로 보여주는 기능
-    if (msg.content.startsWith(";;지도")) {
-        const word = msg.content.replace(/^;;지도\s*/, '').split(' ');
-
-        if (word[0] === '레이크랜드') {
-            await msg.channel.send({
-                files: [
-                    './RakeLand.png',
-                    './RakeLand_Parse.png',
-                ]
-            })
-        } else if (word[0] === '아므아랭') {
-            await msg.channel.send({
-                files: [
-                    './Armarang.png',
-                    './Armarang_Parse.png',
-                ]
-            })
-        } else if (word[0] === '콜루시아') {
-            await msg.channel.send({
-                files: [
-                    './Colusia.png',
-                    './Colusia_Parse.png',
-                ]
-            })
-        } else if (word[0] === '라케티카') {
-            await msg.channel.send({
-                files: [
-                    './Laketica.png',
-                    './Laketica_Parse.png',
-                ]
-            })
-        } else if (word[0] === '일메그') {
-            await msg.channel.send({
-                files: [
-                    './Mag.png',
-                    './Mag_Parse.png',
-                ]
-            })
-        } else if (word[0] === '템페스트') {
-            await msg.channel.send({
-                files: [
-                    './Tempest.png',
-                    './Tempest_Parse.png',
-                ]
-            })
-        }
-    }
+    await findMapImage(msg);
 
     if (ffMsg.length === 4 && ffMsg[3] === '-t') {
         if (ffMsg[0] === '/ff') {
@@ -279,11 +234,9 @@ client.on('message', async msg => {
 
         if (!msg.member?.voice.channel) {
             await msg.channel.send('채널에는 먼저 들어와줘 쿠뽀!');
-        }
-        // else if (channelIdNumber != '764505140639563799') {
-        //     await msg.channel.send('음악방🎵 으로 이동해줘 쿠뽀!');
-        // }
-        else {
+        } else if (channelIdNumber != '764505140639563799') {
+            await msg.channel.send('음악방🎵 으로 이동해줘 쿠뽀!');
+        } else {
             await msg.channel.send('무슨 노래를 재생해 쿠뽀?');
             voiceConnection = await msg.member?.voice.channel?.join();
 
