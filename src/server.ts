@@ -142,7 +142,7 @@ const BotDisconnect = async () => {
 
 // 봇이 켜지고 준비가 되면 실행
 client.on('ready', () => {
-    console.log(`${client.user!.tag}에 로그인하였습니다!`);
+    console.log(`${client.user!.tag}가 켜졌습니다!`);
     client.user?.setActivity('식빵 굽기', { type: 'PLAYING' });
 });
 
@@ -161,7 +161,7 @@ client.on('message', async msg => {
     // 업데이트 쿠뽀 레터 발행용 코드
     if (msg.content === '!!update') {
         const channel_update = client.channels.cache.find(ch => ch.id === '764505214953979935');
-        (channel_update as TextChannel).send(UpdateText);
+        await (channel_update as TextChannel).send(UpdateText);
     }
 
     // 츄르봇으로 음악방 채널에 직접 말할 수 있는 임시 코드
@@ -170,7 +170,7 @@ client.on('message', async msg => {
         const channel_notice = client.channels.cache.find(ch => ch.id === '764505214953979935');
         console.log(word);
 
-        (channel_notice as TextChannel).send(word);
+        await (channel_notice as TextChannel).send(word);
     }
 
     // 츄르봇으로 자유채팅 채널에 직접 말할 수 있는 임시 코드
@@ -179,7 +179,7 @@ client.on('message', async msg => {
         const channel_notice = client.channels.cache.find(ch => ch.id === '764503355899904012');
         console.log(word);
 
-        (channel_notice as TextChannel).send(word);
+        await (channel_notice as TextChannel).send(word);
     }
 
     // 원하는 인원수 만큼 랜덤으로 파티원을 묶어 파티를 만들어줌
@@ -209,45 +209,43 @@ client.on('message', async msg => {
     if (msg.content.startsWith(";;지도")) {
         const word = msg.content.replace(/^;;지도\s*/, '').split(' ');
 
-        console.log(word);
-
         if (word[0] === '레이크랜드') {
-            msg.channel.send({
+            await msg.channel.send({
                 files: [
                     './RakeLand.png',
                     './RakeLand_Parse.png',
                 ]
             })
         } else if (word[0] === '아므아랭') {
-            msg.channel.send({
+            await msg.channel.send({
                 files: [
                     './Armarang.png',
                     './Armarang_Parse.png',
                 ]
             })
         } else if (word[0] === '콜루시아') {
-            msg.channel.send({
+            await msg.channel.send({
                 files: [
                     './Colusia.png',
                     './Colusia_Parse.png',
                 ]
             })
         } else if (word[0] === '라케티카') {
-            msg.channel.send({
+            await msg.channel.send({
                 files: [
                     './Laketica.png',
                     './Laketica_Parse.png',
                 ]
             })
         } else if (word[0] === '일메그') {
-            msg.channel.send({
+            await msg.channel.send({
                 files: [
                     './Mag.png',
                     './Mag_Parse.png',
                 ]
             })
         } else if (word[0] === '템페스트') {
-            msg.channel.send({
+            await msg.channel.send({
                 files: [
                     './Tempest.png',
                     './Tempest_Parse.png',
@@ -258,19 +256,19 @@ client.on('message', async msg => {
 
     if (ffMsg.length === 4 && ffMsg[3] === '-t') {
         if (ffMsg[0] === '/ff') {
-            msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
-            msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
-            msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
-            msg.author.send(await ParseEdenPromise(ffMsg[1], ffMsg[2], true));
-            msg.author.send(AlertText);
+            await msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
+            await msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
+            await msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
+            await msg.author.send(await ParseEdenPromise(ffMsg[1], ffMsg[2], true));
+            await msg.author.send(AlertText);
         }
     } else if (ffMsg.length === 3) {
         if (ffMsg[0] === '/ff') {
-            msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
-            msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
-            msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
-            msg.author.send(await ParseEdenPromise(ffMsg[1], ffMsg[2], true));
-            msg.author.send(AlertText);
+            await msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
+            await msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
+            await msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
+            await msg.author.send(await ParseEdenPromise(ffMsg[1], ffMsg[2], true));
+            await msg.author.send(AlertText);
         }
     }
 
@@ -281,9 +279,11 @@ client.on('message', async msg => {
 
         if (!msg.member?.voice.channel) {
             await msg.channel.send('채널에는 먼저 들어와줘 쿠뽀!');
-        } else if (channelIdNumber != '764505140639563799') {
-            await msg.channel.send('음악방🎵 으로 이동해줘 쿠뽀!');
-        } else {
+        }
+        // else if (channelIdNumber != '764505140639563799') {
+        //     await msg.channel.send('음악방🎵 으로 이동해줘 쿠뽀!');
+        // }
+        else {
             await msg.channel.send('무슨 노래를 재생해 쿠뽀?');
             voiceConnection = await msg.member?.voice.channel?.join();
 
@@ -301,6 +301,8 @@ client.on('message', async msg => {
     if (msg.content.startsWith(';;f')) {
         if(!msg.member?.voice.channel) {
             await msg.channel.send('채널에는 먼저 들어와줘 쿠뽀!');
+        } else if (!voiceConnection) {
+            await msg.channel.send('채널에 먼저 들여보내줘 쿠뽀!');
         } else {
             const term = msg.content.replace(/^;;f\s*/, '');
             const searchResults = await searchYouTube(term);
@@ -314,9 +316,10 @@ client.on('message', async msg => {
             })
 
             await msg.channel.send(`검색결과가 나왔어 쿠뽀!\n${message}`);
+
+            console.log(client.user?.bot, '테스트');
         }
     }
-
 
     // 노래 재생 부분
     if (msg.content.startsWith(";;p")) {
@@ -324,7 +327,8 @@ client.on('message', async msg => {
 
         if (!voiceConnection) {
             await msg.channel.send('채널에는 아무도 없는것 같다 쿠뽀!');
-
+        } else if (musicList.length === 0) {
+            await msg.channel.send('먼저 노래를 예약해줘 쿠뽀!');
         } else if (!isPlaying) {
             musicQueue.push({
                 link: musicList[numberTerm].link,
