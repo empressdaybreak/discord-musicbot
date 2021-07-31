@@ -16,7 +16,11 @@ import {findMapImage} from "./FFMap/FFMapFunc";
 
 const client = new Client();
 
+// 랜덤 파티 인원 만들기 배열
 let RandomResult: string[] = [];
+
+// 쿠로 만들기용 배열
+let kuroArr: string[] = [];
 
 // 프프로그 사용시 경고문
 const AlertText = new MessageEmbed()
@@ -205,6 +209,22 @@ client.on('message', async msg => {
             await msg.channel.send('다시 적어 줘~ 쿠뽀!');
         }
         RandomResult = [];
+    }
+
+    // 쿠로 중복 단어 제거 하여 보여주는 기능
+    if (msg.content.startsWith(';;쿠로')) {
+        const words = msg.content.replace(/^;;쿠로\s*/, '').split(' ');
+
+        for (let i = 0; i < words.length; i++) {
+            kuroArr.push(words[i]);
+        }
+
+        const setKuro = new Set(kuroArr);
+        const converterArray = JSON.stringify([...setKuro].join(", "));
+
+        converterArray.replace(/^"\s*/, '');
+
+        await msg.channel.send(`${converterArray} 쿠로 빙고 화이팅이야~ 쿠뽀!`);
     }
 
     // 지도 이미지를 바로 보여주는 기능
