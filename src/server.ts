@@ -309,6 +309,8 @@ client.on('message', async msg => {
             initDarkArr = [];
         }
 
+        msg.channel.send('쿠로 목록이야 쿠뽀~');
+
         kuroArr = [];
         sinArr = [];
         changArr = [];
