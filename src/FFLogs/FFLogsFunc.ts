@@ -156,6 +156,11 @@ async function RankMarker(
         75: 'Fatebreaker',
         76: "Eden's Promise",
         77: 'Oracle of Darkness',
+        78: 'Erichthonios',
+        79: 'Hippokampos',
+        80: 'Phoinix',
+        81: 'Hesperos',
+        82: 'Hesperos II',
         1050: 'The Epic of Alexander',
     };
 
@@ -244,4 +249,13 @@ export async function ParseEdenPromise(
 ) {
     const output: string = `\`'${charName}'\`의 \`'Eden's Promise'\` 기록\n`;
     return output + (await RankMarker(serverName, charName, 38, CheckMethod));
+}
+
+export async function ParseAsphodelos(
+    serverName: string,
+    charName: string,
+    CheckMethod: boolean,
+) {
+    const output: string = `\`'${charName}'\`의 \`'Asphodelos'\` 기록\n`;
+    return output + (await RankMarker(serverName, charName, 44, CheckMethod));
 }

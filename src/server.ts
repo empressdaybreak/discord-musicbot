@@ -10,7 +10,13 @@ import {
 } from 'discord.js';
 import ytdl from 'ytdl-core-discord';
 import youtubeSearch, { YouTubeSearchResults } from 'youtube-search';
-import {ParseUltimateAlexander, ParseEdenGate, ParseEdenVerse, ParseEdenPromise} from './FFLogs/FFLogsFunc';
+import {
+    ParseUltimateAlexander,
+    ParseEdenGate,
+    ParseEdenVerse,
+    ParseEdenPromise,
+    ParseAsphodelos
+} from './FFLogs/FFLogsFunc';
 import Timeout = NodeJS.Timeout;
 import {findMapImage} from "./FFMap/FFMapFunc";
 
@@ -36,6 +42,7 @@ const kuroListArr = [
     { name: '라무', local: 'sin' },
     { name: '시바', local: 'sin' },
     { name: '오딘', local: 'sin' },
+    { name: '알테마', local: 'sin' },
 
     { name: '비스마르크', local: 'chang' },
     { name: '라바나', local: 'chang' },
@@ -327,6 +334,7 @@ client.on('message', async msg => {
             await msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
             await msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
             await msg.author.send(await ParseEdenPromise(ffMsg[1], ffMsg[2], true));
+            await msg.author.send(await ParseAsphodelos(ffMsg[1], ffMsg[2], true));
             await msg.author.send(AlertText);
         }
     } else if (ffMsg.length === 3) {
@@ -335,6 +343,7 @@ client.on('message', async msg => {
             await msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
             await msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
             await msg.author.send(await ParseEdenPromise(ffMsg[1], ffMsg[2], true));
+            await msg.author.send(await ParseAsphodelos(ffMsg[1], ffMsg[2], true));
             await msg.author.send(AlertText);
         }
     }
@@ -346,11 +355,9 @@ client.on('message', async msg => {
 
         if (!msg.member?.voice.channel) {
             await msg.channel.send('채널에는 먼저 들어와줘 쿠뽀!');
-        }
-        // else if (channelIdNumber != '764505140639563799') {
-        //     await msg.channel.send('음악방🎵 으로 이동해줘 쿠뽀!');
-        // }
-        else {
+        } else if (channelIdNumber != '764505140639563799') {
+            await msg.channel.send('음악방🎵 으로 이동해줘 쿠뽀!');
+        } else {
             await msg.channel.send('무슨 노래를 재생해 쿠뽀?');
             voiceConnection = await msg.member?.voice.channel?.join();
 
@@ -359,8 +366,35 @@ client.on('message', async msg => {
         }
     }
 
+
+    // 테스트 채널용 Bot 들어오게 함
+    // if (msg.content === ';;채널') {
+    //     const channelIdNumber = msg.member?.voice.channelID;
+    //     channel = msg.channel;
+    //
+    //     if (!msg.member?.voice.channel) {
+    //         await msg.channel.send('채널에는 먼저 들어와줘 쿠뽀!');
+    //     } else if (channelIdNumber != '827415974386073650') {
+    //         await msg.channel.send('음악방🎵 으로 이동해줘 쿠뽀!');
+    //     } else {
+    //         const musicPlayer = new MessageEmbed()
+    //             .setColor('#0099ff')
+    //             .setTitle('뮤직 플레이어')
+    //             .setDescription('테스트 뮤직 플레이어')
+    //
+    //         await msg.channel.send(musicPlayer).then((msg) => {
+    //             msg.react('⏩');
+    //         });
+    //         voiceConnection = await msg.member?.voice.channel?.join();
+    //
+    //         const channel = msg.member?.voice.channel;
+    //         intervalTimer = setInterval(() => { BotObserver(channel) }, 1000);
+    //     }
+    // }
+
+
     // Bot 을 나가게 함
-    if (msg.content === '나가줘' || msg.content === ';;leave') {
+    if (msg.content === ';;나가줘' || msg.content === ';;leave') {
         await BotDisconnect();
     }
 
