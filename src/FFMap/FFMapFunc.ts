@@ -47,43 +47,36 @@ export async function findMapImage(msg) {
         } else if (word[0].includes('사베네어')) {
             await msg.channel.send({
                 files: [
-                    './Tempest.png',
-                    './Tempest_Parse.png',
+                    './Sabe.png',
+                    './Sabe_Parse.png',
                 ]
             })
         } else if (word[0].includes('라비')) {
             await msg.channel.send({
                 files: [
-                    './Tempest.png',
-                    './Tempest_Parse.png',
+                    './Lavi.png',
+                    './Lavi_Parse.png',
                 ]
             })
         } else if (word[0].includes('비탄')) {
             await msg.channel.send({
                 files: [
-                    './Tempest.png',
-                    './Tempest_Parse.png',
+                    './Bitan.png',
+                    './Bitan_Parse.png',
                 ]
             })
         } else if (word[0].includes('갈레말')) {
             await msg.channel.send({
                 files: [
-                    './Tempest.png',
-                    './Tempest_Parse.png',
-                ]
-            })
-        } else if (word[0].includes('엘피스')) {
-            await msg.channel.send({
-                files: [
-                    './Tempest.png',
-                    './Tempest_Parse.png',
+                    './Gal.png',
+                    './Gal_Parse.png',
                 ]
             })
         } else if (word[0].includes('울티마')) {
             await msg.channel.send({
                 files: [
-                    './Tempest.png',
-                    './Tempest_Parse.png',
+                    './Ulti.png',
+                    './Ulti_Parse.png',
                 ]
             })
         } else {
