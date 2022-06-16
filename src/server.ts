@@ -65,6 +65,8 @@ const kuroListArr = [
     { name: '이노센스', local: 'dark' },
     { name: '하데스', local: 'dark' },
     { name: '루비', local: 'dark' },
+    { name: '에메랄드', local: 'dark' },
+    { name: '다이아', local: 'dark' },
     { name: '빛전', local: 'dark' },
 ];
 

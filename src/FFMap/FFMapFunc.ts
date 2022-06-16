@@ -2,42 +2,84 @@ export async function findMapImage(msg) {
     if (msg.content.startsWith(";;지도")) {
         const word = msg.content.replace(/^;;지도\s*/, '').split(' ');
 
-        if (word[0] === '레이크랜드') {
+        if (word[0].includes('레이크')) {
             await msg.channel.send({
                 files: [
                     './RakeLand.png',
                     './RakeLand_Parse.png',
                 ]
             })
-        } else if (word[0] === '아므아랭') {
+        } else if (word[0].includes('아므')) {
             await msg.channel.send({
                 files: [
                     './Armarang.png',
                     './Armarang_Parse.png',
                 ]
             })
-        } else if (word[0] === '콜루시아') {
+        } else if (word[0].includes('콜루')) {
             await msg.channel.send({
                 files: [
                     './Colusia.png',
                     './Colusia_Parse.png',
                 ]
             })
-        } else if (word[0] === '라케티카') {
+        } else if (word[0].includes('라케')) {
             await msg.channel.send({
                 files: [
                     './Laketica.png',
                     './Laketica_Parse.png',
                 ]
             })
-        } else if (word[0] === '일메그') {
+        } else if (word[0].includes('일메그')) {
             await msg.channel.send({
                 files: [
                     './Mag.png',
                     './Mag_Parse.png',
                 ]
             })
-        } else if (word[0] === '템페스트') {
+        } else if (word[0].includes('템페')) {
+            await msg.channel.send({
+                files: [
+                    './Tempest.png',
+                    './Tempest_Parse.png',
+                ]
+            })
+        } else if (word[0].includes('사베네어')) {
+            await msg.channel.send({
+                files: [
+                    './Tempest.png',
+                    './Tempest_Parse.png',
+                ]
+            })
+        } else if (word[0].includes('라비')) {
+            await msg.channel.send({
+                files: [
+                    './Tempest.png',
+                    './Tempest_Parse.png',
+                ]
+            })
+        } else if (word[0].includes('비탄')) {
+            await msg.channel.send({
+                files: [
+                    './Tempest.png',
+                    './Tempest_Parse.png',
+                ]
+            })
+        } else if (word[0].includes('갈레말')) {
+            await msg.channel.send({
+                files: [
+                    './Tempest.png',
+                    './Tempest_Parse.png',
+                ]
+            })
+        } else if (word[0].includes('엘피스')) {
+            await msg.channel.send({
+                files: [
+                    './Tempest.png',
+                    './Tempest_Parse.png',
+                ]
+            })
+        } else if (word[0].includes('울티마')) {
             await msg.channel.send({
                 files: [
                     './Tempest.png',
