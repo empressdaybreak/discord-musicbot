@@ -1,8 +1,6 @@
 export async function findMapImage(msg) {
     if (msg.content.startsWith(";;지도")) {
         const word = msg.content.replace(/^;;지도\s*/, '').split(' ');
-        console.log(word);
-        console.log(word[0].includes('레이크'));
 
         if (word[0].includes('레이크')) {
             await msg.channel.send({
