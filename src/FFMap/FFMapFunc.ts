@@ -49,35 +49,35 @@ export async function findMapImage(msg) {
         } else if (word[0].includes('사베네어')) {
             await msg.channel.send({
                 files: [
-                    './Sabe.png',
+                    './Sabe.PNG',
                     './Sabe_Parse.PNG',
                 ]
             })
         } else if (word[0].includes('라비')) {
             await msg.channel.send({
                 files: [
-                    './Lavi.png',
+                    './Lavi.PNG',
                     './Lavi_Parse.PNG',
                 ]
             })
         } else if (word[0].includes('비탄')) {
             await msg.channel.send({
                 files: [
-                    './Bitan.png',
+                    './Bitan.PNG',
                     './Bitan_Parse.PNG',
                 ]
             })
         } else if (word[0].includes('갈레말')) {
             await msg.channel.send({
                 files: [
-                    './Gal.png',
+                    './Gal.PNG',
                     './Gal_Parse.PNG',
                 ]
             })
         } else if (word[0].includes('울티마')) {
             await msg.channel.send({
                 files: [
-                    './Ulti.png',
+                    './Ulti.PNG',
                     './Ulti_Parse.PNG',
                 ]
             })
