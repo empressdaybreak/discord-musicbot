@@ -2,8 +2,8 @@ export async function findMapImage(msg) {
     if (msg.content.startsWith(";;지도")) {
         const word = msg.content.replace(/^;;지도\s*/, '').split(' ');
         console.log(word);
-        console.log(word.includes('레이크'));
-        
+        console.log(word[0].includes('레이크'));
+
         if (word[0].includes('레이크')) {
             await msg.channel.send({
                 files: [
@@ -50,35 +50,35 @@ export async function findMapImage(msg) {
             await msg.channel.send({
                 files: [
                     './Sabe.png',
-                    './Sabe_Parse.png',
+                    './Sabe_Parse.PNG',
                 ]
             })
         } else if (word[0].includes('라비')) {
             await msg.channel.send({
                 files: [
                     './Lavi.png',
-                    './Lavi_Parse.png',
+                    './Lavi_Parse.PNG',
                 ]
             })
         } else if (word[0].includes('비탄')) {
             await msg.channel.send({
                 files: [
                     './Bitan.png',
-                    './Bitan_Parse.png',
+                    './Bitan_Parse.PNG',
                 ]
             })
         } else if (word[0].includes('갈레말')) {
             await msg.channel.send({
                 files: [
                     './Gal.png',
-                    './Gal_Parse.png',
+                    './Gal_Parse.PNG',
                 ]
             })
         } else if (word[0].includes('울티마')) {
             await msg.channel.send({
                 files: [
                     './Ulti.png',
-                    './Ulti_Parse.png',
+                    './Ulti_Parse.PNG',
                 ]
             })
         } else {
