@@ -243,10 +243,10 @@ client.on('message', async msg => {
 
             msg.fetch(msg.author?.lastMessageID).then(message => message.delete());
             
-            if (msg.member?.nickname == null) {
-                await (spoilerChannel as TextChannel).send("||" + "**" + msg.author?.username + "**" + "```" + msg.author?.lastMessage.content + "```" + "||");
+            if (msg.member.nickname == null || !msg.member.nickname) {
+                await (spoilerChannel as TextChannel).send("||" + "**" + msg.author.username + "**" + "```" + msg.author.lastMessage.content + "```" + "||");
             } else {
-                await (spoilerChannel as TextChannel).send("||" + "**" + msg.member?.nickname + "**" + "```" + msg.author?.lastMessage.content + "```" + "||");
+                await (spoilerChannel as TextChannel).send("||" + "**" + msg.member.nickname + "**" + "```" + msg.author.lastMessage.content + "```" + "||");
             }
         }
     }
