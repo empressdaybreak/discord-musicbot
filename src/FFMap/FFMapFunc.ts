@@ -5,78 +5,78 @@ export async function findMapImage(msg) {
         if (word[0].includes('레이크')) {
             await msg.channel.send({
                 files: [
-                    './RakeLand.png',
-                    './RakeLand_Parse.png',
+                    './MapImg/RakeLand.png',
+                    './MapImg/RakeLand_Parse.png',
                 ]
             })
         } else if (word[0].includes('아므')) {
             await msg.channel.send({
                 files: [
-                    './Armarang.png',
-                    './Armarang_Parse.png',
+                    './MapImg/Armarang.png',
+                    './MapImg/Armarang_Parse.png',
                 ]
             })
         } else if (word[0].includes('콜루')) {
             await msg.channel.send({
                 files: [
-                    './Colusia.png',
-                    './Colusia_Parse.png',
+                    './MapImg/Colusia.png',
+                    './MapImg/Colusia_Parse.png',
                 ]
             })
         } else if (word[0].includes('라케')) {
             await msg.channel.send({
                 files: [
-                    './Laketica.png',
-                    './Laketica_Parse.png',
+                    './MapImg/Laketica.png',
+                    './MapImg/Laketica_Parse.png',
                 ]
             })
         } else if (word[0].includes('일메그')) {
             await msg.channel.send({
                 files: [
-                    './Mag.png',
-                    './Mag_Parse.png',
+                    './MapImg/Mag.png',
+                    './MapImg/Mag_Parse.png',
                 ]
             })
         } else if (word[0].includes('템페')) {
             await msg.channel.send({
                 files: [
-                    './Tempest.png',
-                    './Tempest_Parse.png',
+                    './MapImg/Tempest.png',
+                    './MapImg/Tempest_Parse.png',
                 ]
             })
         } else if (word[0].includes('사베네어')) {
             await msg.channel.send({
                 files: [
-                    './Sabe.PNG',
-                    './Sabe_Parse.PNG',
+                    './MapImg/Sabe.PNG',
+                    './MapImg/Sabe_Parse.PNG',
                 ]
             })
         } else if (word[0].includes('라비')) {
             await msg.channel.send({
                 files: [
-                    './Lavi.PNG',
-                    './Lavi_Parse.PNG',
+                    './MapImg/Lavi.PNG',
+                    './MapImg/Lavi_Parse.PNG',
                 ]
             })
         } else if (word[0].includes('비탄')) {
             await msg.channel.send({
                 files: [
-                    './Bitan.PNG',
-                    './Bitan_Parse.PNG',
+                    './MapImg/Bitan.PNG',
+                    './MapImg/Bitan_Parse.PNG',
                 ]
             })
         } else if (word[0].includes('갈레말')) {
             await msg.channel.send({
                 files: [
-                    './Gal.PNG',
-                    './Gal_Parse.PNG',
+                    './MapImg/Gal.PNG',
+                    './MapImg/Gal_Parse.PNG',
                 ]
             })
         } else if (word[0].includes('울티마')) {
             await msg.channel.send({
                 files: [
-                    './Ulti.PNG',
-                    './Ulti_Parse.PNG',
+                    './MapImg/Ulti.PNG',
+                    './MapImg/Ulti_Parse.PNG',
                 ]
             })
         } else {
