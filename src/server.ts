@@ -237,19 +237,19 @@ client.on('message', async msg => {
     }
 
     // 특정 채널 자동 메시지 스포일러 기능
-    if (msg.channel.id === "820875943769669653") {
-        if (msg.author.id != "655420634892861493") {
-            const spoilerChannel = client.channels.cache.find(ch => ch.id === "820875943769669653");
+    // if (msg.channel.id === "820875943769669653") {
+    //     if (msg.author.id != "655420634892861493") {
+    //         const spoilerChannel = client.channels.cache.find(ch => ch.id === "820875943769669653");
 
-            msg.fetch(msg.author?.lastMessageID).then(message => message.delete());
+    //         msg.fetch(msg.author?.lastMessageID).then(message => message.delete());
             
-            if (msg.member.nickname == null || !msg.member.nickname) {
-                await (spoilerChannel as TextChannel).send("||" + "**" + msg.author.username + "**" + "```" + msg.author.lastMessage.content + "```" + "||");
-            } else {
-                await (spoilerChannel as TextChannel).send("||" + "**" + msg.member.nickname + "**" + "```" + msg.author.lastMessage.content + "```" + "||");
-            }
-        }
-    }
+    //         if (msg.member.nickname == null) {
+    //             await (spoilerChannel as TextChannel).send("||" + "**" + msg.author.username + "**" + "```" + msg.author.lastMessage.content + "```" + "||");
+    //         } else {
+    //             await (spoilerChannel as TextChannel).send("||" + "**" + msg.member.nickname + "**" + "```" + msg.author.lastMessage.content + "```" + "||");
+    //         }
+    //     }
+    // }
 
     // 원하는 인원수 만큼 랜덤으로 파티원을 묶어 파티를 만들어줌
     if (msg.content.startsWith(';;파티')) {
