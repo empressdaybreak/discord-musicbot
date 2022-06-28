@@ -208,7 +208,7 @@ client.on('ready', () => {
 
 client.on('message', async msg => {
     // 혹시나 모를 일을 위해 메시지 정보 수집
-    console.log(`${msg.author.tag}: ${msg.content}`);
+    // console.log(`${msg.author.tag}: ${msg.content}`);
 
     const ffMsg: string[] = msg.content.split(' ');
 
