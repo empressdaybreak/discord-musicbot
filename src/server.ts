@@ -208,7 +208,7 @@ client.on('ready', () => {
 
 client.on('message', async msg => {
     // 혹시나 모를 일을 위해 메시지 정보 수집
-    // console.log(`${msg.author.tag}: ${msg.content}`);
+    console.log(`${msg.author.tag}: ${msg.content}`);
 
     const ffMsg: string[] = msg.content.split(' ');
 
@@ -231,7 +231,6 @@ client.on('message', async msg => {
     if (msg.content.startsWith("!!free")) {
         const word = msg.content.replace(/^!!free\s*/, '');
         const channel_notice = client.channels.cache.find(ch => ch.id === '764503355899904012');
-        console.log(word);
 
         await (channel_notice as TextChannel).send(word);
     }
@@ -242,7 +241,7 @@ client.on('message', async msg => {
     //         const spoilerChannel = client.channels.cache.find(ch => ch.id === "820875943769669653");
 
     //         msg.fetch(msg.author?.lastMessageID).then(message => message.delete());
-            
+
     //         if (msg.member.nickname == null) {
     //             await (spoilerChannel as TextChannel).send("||" + "**" + msg.author.username + "**" + "```" + msg.author.lastMessage.content + "```" + "||");
     //         } else {
@@ -252,27 +251,27 @@ client.on('message', async msg => {
     // }
 
     // 원하는 인원수 만큼 랜덤으로 파티원을 묶어 파티를 만들어줌
-    if (msg.content.startsWith(';;파티')) {
-        const word = msg.content.replace(/^;;파티\s*/, '').split(' ');
-        const number = Number(word[0])+1;
-        const calc = Number(word.length - number);
-
-        word.shift();
-
-        while (word.length > calc) {
-            const move = word.splice(Math.floor(Math.random() * word.length), 1)[0];
-            RandomResult.push(move);
-        }
-
-        const result = RandomResult.join(' ');
-
-        if (result.length != 0) {
-            await msg.channel.send(`${result} 가 한 파티야~ 쿠뽀!`);
-        } else {
-            await msg.channel.send('다시 적어 줘~ 쿠뽀!');
-        }
-        RandomResult = [];
-    }
+    // if (msg.content.startsWith(';;파티')) {
+    //     const word = msg.content.replace(/^;;파티\s*/, '').split(' ');
+    //     const number = Number(word[0])+1;
+    //     const calc = Number(word.length - number);
+    //
+    //     word.shift();
+    //
+    //     while (word.length > calc) {
+    //         const move = word.splice(Math.floor(Math.random() * word.length), 1)[0];
+    //         RandomResult.push(move);
+    //     }
+    //
+    //     const result = RandomResult.join(' ');
+    //
+    //     if (result.length != 0) {
+    //         await msg.channel.send(`${result} 가 한 파티야~ 쿠뽀!`);
+    //     } else {
+    //         await msg.channel.send('다시 적어 줘~ 쿠뽀!');
+    //     }
+    //     RandomResult = [];
+    // }
 
     // 쿠로 중복 단어 제거 하여 보여주는 기능
     if (msg.content.startsWith(';;쿠로')) {
