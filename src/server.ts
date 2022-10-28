@@ -201,10 +201,10 @@ client.on('ready', () => {
 });
 
 // 새로운 멤버가 오면 환영메시지
-// client.on('guildMemberAdd', member => {
-//     const channel = member.guild.channels.cache.find(ch => ch.name === '자유채팅🔥');
-//     (channel as TextChannel)?.send(`식빵 굽는 ${member.displayName} 냥이가 왔어 쿠뽀! 환영해줘 쿠뽀!`);
-// });
+client.on('guildMemberAdd', member => {
+    const channel = member.guild.channels.cache.find(ch => ch.id === '878109743665795072');
+    (channel as TextChannel)?.send(`식빵 굽는 ${member.displayName} 냥이가 왔어 쿠뽀! 환영해줘 쿠뽀!`);
+});
 
 client.on('message', async msg => {
     // 혹시나 모를 일을 위해 메시지 정보 수집
