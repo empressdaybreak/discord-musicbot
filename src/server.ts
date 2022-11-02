@@ -6,98 +6,19 @@ import {
     TextChannel,
     VoiceChannel,
     VoiceConnection,
-    MessageEmbed,
 } from 'discord.js';
 import ytdl from 'ytdl-core-discord';
 import youtubeSearch, { YouTubeSearchResults } from 'youtube-search';
-import {
-    ParseUltimateAlexander,
-    ParseEdenGate,
-    ParseEdenVerse,
-    ParseEdenPromise,
-    ParseAsphodelos
-} from './FFLogs/FFLogsFunc';
 import Timeout = NodeJS.Timeout;
-import {findMapImage} from "./FFMap/FFMapFunc";
+import {findMapImage} from "./FunctionList/FFMap/FFMapFunc";
+import {autoKuro} from "./FunctionList/FFKuro/FFKuroFunc";
+import {randomParty} from "./FunctionList/FFRandomParty/FFRandomPartyFunc";
+import {freeChannelNotice, musicChannelNotice, updateNotice} from "./FunctionList/FFBotTalk/FFBotTalkFunc";
+import {autoSpoiler} from "./FunctionList/FFSpoiler/FFSpoilerFunc";
+import {logsLoad} from "./FunctionList/FFLogs/FFLogsLoadFunc";
 
 const client = new Client();
 
-// 랜덤 파티 인원 만들기 배열
-let RandomResult: string[] = [];
-
-// 쿠로 만들기용 배열
-let kuroArr: any = [];
-
-let sinArr: string[] = [];
-let changArr: string[] = [];
-let hongArr: string[] = [];
-let darkArr: string[] = [];
-
-const kuroListArr = [
-    { name: '가루다', local: 'sin' },
-    { name: '타이탄', local: 'sin' },
-    { name: '이프리트', local: 'sin' },
-    { name: '모그', local: 'sin' },
-    { name: '리바', local: 'sin' },
-    { name: '라무', local: 'sin' },
-    { name: '시바', local: 'sin' },
-    { name: '오딘', local: 'sin' },
-    { name: '알테마', local: 'sin' },
-
-    { name: '비스마르크', local: 'chang' },
-    { name: '라바나', local: 'chang' },
-    { name: '나오라', local: 'chang' },
-    { name: '세피', local: 'chang' },
-    { name: '니드호그', local: 'chang' },
-    { name: '소피아', local: 'chang' },
-    { name: '주르반', local: 'chang' },
-
-    { name: '스사노오', local: 'hong' },
-    { name: '락슈미', local: 'hong' },
-    { name: '신룡', local: 'hong' },
-    { name: '백호', local: 'hong' },
-    { name: '츠쿠', local: 'hong' },
-    { name: '리오레우스', local: 'hong' },
-    { name: '주작', local: 'hong' },
-    { name: '청룡', local: 'hong' },
-
-    { name: '티타니아', local: 'dark' },
-    { name: '이노센스', local: 'dark' },
-    { name: '하데스', local: 'dark' },
-    { name: '루비', local: 'dark' },
-    { name: '에메랄드', local: 'dark' },
-    { name: '다이아', local: 'dark' },
-    { name: '빛전', local: 'dark' },
-];
-
-// 프프로그 사용시 경고문
-const AlertText = new MessageEmbed()
-    .setColor('#0099ff')
-    .setTitle('잠깐만요!')
-    .setDescription('주의사항 : 절대 부대내 다른유저 검색금지 / 무조건 본인것만 확인하기\n' +
-        '\n' +
-        '시비, 갈등조장의 원인 제공시 원인제공부대원 부대추방 / 봇삭제\n' +
-        '\n' +
-        '갈등조장\n' +
-        '예시1) A유저는 던전자체를 즐기며하는 플레이를 선호. B유저가 A유저의 프프로그를 검색 후 딜싸이클, 던전플레이훈수 등 원하지 않는 정보를 제공하며 압박감 형성\n' +
-        '\n' +
-        '예시2) A유저와 B유저간 분석을 통해 서로에게 도움을 주기로 합의는 했지만 의도치않은 문제발생으로인해 사이가 틀어질수있음. 둘의 문제점을 부대까지 끌고오게되는 경우\n' +
-        '\n' +
-        '예시3) B유저는 선의의 마음(B유저 본인의 마음)으로 프프로그 분석을 알려주고 가르쳐주지만 A유저 입장에선 엄청난 부담감, 수치심 느낄가능성이 큼. \n' +
-        '\n' +
-        '검색자의 검색기록은 지우셔도 남아있습니다!'
-    );
-
-// 디스코드 봇 업데이트 문구 출력
-const UpdateText = new MessageEmbed()
-    .setColor('#0099ff')
-    .setTitle('쿠뽀 레터 📩')
-    .setDescription('"쿠뽀 레터" 를 발행하러 왔어~ 쿠뽀!\n \n' +
-        '효월을 위한 14등급 지도가 추가되었어 쿠뽀~\n \n' +
-        ';;지도 [지역] 으로 입력하면 해당 지도 이미지가 나올꺼야 쿠뽀~\n \n' +
-        '지역에 관련된 부분은 보고 있는 채널 위에 "#보물지도" 옆에 부분을 클릭하면 자세히 볼 수 있어 쿠뽀!\n \n' +
-        '언제든 불편한 점이 있다면 부담없이 말해줘 쿠뽀!'
-    );
 
 // 유튜브 노래 재생을 위한 변수
 let voiceConnection: VoiceConnection | null = null;
@@ -201,168 +122,33 @@ client.on('ready', () => {
 });
 
 // 새로운 멤버가 오면 환영메시지
-client.on('guildMemberAdd', member => {
+client.on('guildMemberAdd', async member => {
     const channel = member.guild.channels.cache.find(ch => ch.id === '878109743665795072');
-    (channel as TextChannel)?.send(`식빵 굽는 ${member.displayName} 냥이가 왔어 쿠뽀! 환영해줘 쿠뽀!`);
+    await (channel as TextChannel)?.send(`식빵 굽는 ${member.displayName} 냥이가 왔어 쿠뽀! 환영해줘 쿠뽀!`);
 });
 
 client.on('message', async msg => {
     // 혹시나 모를 일을 위해 메시지 정보 수집
     console.log(`${msg.author.tag}: ${msg.content}`);
 
-    const ffMsg: string[] = msg.content.split(' ');
-
     // 업데이트 쿠뽀 레터 발행용 코드 (음악방 채널 764505214953979935 / 지도 채널 854251926316515358)
-    if (msg.content === '!!update') {
-        const channel_update = client.channels.cache.find(ch => ch.id === '854251926316515358');
-        await (channel_update as TextChannel).send(UpdateText);
-    }
-
-    // 츄르봇으로 음악방 채널에 직접 말할 수 있는 임시 코드
-    if (msg.content.startsWith("!!music")) {
-        const word = msg.content.replace(/^!!music\s*/, '');
-        const channel_notice = client.channels.cache.find(ch => ch.id === '764505214953979935');
-        console.log(word);
-
-        await (channel_notice as TextChannel).send(word);
-    }
-
-    // 츄르봇으로 자유채팅 채널에 직접 말할 수 있는 임시 코드
-    if (msg.content.startsWith("!!free")) {
-        const word = msg.content.replace(/^!!free\s*/, '');
-        const channel_notice = client.channels.cache.find(ch => ch.id === '764503355899904012');
-
-        await (channel_notice as TextChannel).send(word);
-    }
+    await updateNotice(msg, client);
+    await musicChannelNotice(msg, client);
+    await freeChannelNotice(msg, client);
 
     // 특정 채널 자동 메시지 스포일러 기능
-    // if (msg.channel.id === "820875943769669653") {
-    //     if (msg.author.id != "655420634892861493") {
-    //         const spoilerChannel = client.channels.cache.find(ch => ch.id === "820875943769669653");
-
-    //         msg.fetch(msg.author?.lastMessageID).then(message => message.delete());
-
-    //         if (msg.member.nickname == null) {
-    //             await (spoilerChannel as TextChannel).send("||" + "**" + msg.author.username + "**" + "```" + msg.author.lastMessage.content + "```" + "||");
-    //         } else {
-    //             await (spoilerChannel as TextChannel).send("||" + "**" + msg.member.nickname + "**" + "```" + msg.author.lastMessage.content + "```" + "||");
-    //         }
-    //     }
-    // }
+    await autoSpoiler(msg, client);
 
     // 원하는 인원수 만큼 랜덤으로 파티원을 묶어 파티를 만들어줌
-    // if (msg.content.startsWith(';;파티')) {
-    //     const word = msg.content.replace(/^;;파티\s*/, '').split(' ');
-    //     const number = Number(word[0])+1;
-    //     const calc = Number(word.length - number);
-    //
-    //     word.shift();
-    //
-    //     while (word.length > calc) {
-    //         const move = word.splice(Math.floor(Math.random() * word.length), 1)[0];
-    //         RandomResult.push(move);
-    //     }
-    //
-    //     const result = RandomResult.join(' ');
-    //
-    //     if (result.length != 0) {
-    //         await msg.channel.send(`${result} 가 한 파티야~ 쿠뽀!`);
-    //     } else {
-    //         await msg.channel.send('다시 적어 줘~ 쿠뽀!');
-    //     }
-    //     RandomResult = [];
-    // }
+    await randomParty(msg);
 
     // 쿠로 중복 단어 제거 하여 보여주는 기능
-    if (msg.content.startsWith(';;쿠로')) {
-        const words = msg.content.replace(/^;;쿠로\s*/, '').split(' ');
-
-        for(let i=0; i<=words.length; i++) {
-            const result = kuroListArr.filter(word => word.name.includes(words[i]));
-            kuroArr.push(...result);
-        }
-
-        const filterSin = kuroArr.filter(word => word.local === "sin");
-        const filterChang = kuroArr.filter(word => word.local === "chang");
-        const filterHong = kuroArr.filter(word => word.local === "hong");
-        const filterDark = kuroArr.filter(word => word.local === "dark");
-
-        const Sin = Array.from(new Set(filterSin));
-        const Chang = Array.from(new Set(filterChang));
-        const Hong = Array.from(new Set(filterHong));
-        const Dark = Array.from(new Set(filterDark));
-
-        Sin.map((data: any) => (
-            sinArr.push(data.name)
-        ));
-
-        Chang.map((data: any) => (
-            changArr.push(data.name)
-        ));
-
-        Hong.map((data: any) => (
-            hongArr.push(data.name)
-        ));
-
-        Dark.map((data: any) => {
-            darkArr.push(data.name)
-        });
-
-        if (sinArr.length != 0) {
-            let initSinArr = Array.from(new Set(sinArr));
-            msg.channel.send('신생: ' + initSinArr);
-            initSinArr = [];
-        }
-
-        if (changArr.length != 0) {
-            let initChangArr = Array.from(new Set(changArr))
-            msg.channel.send('창천: ' + initChangArr);
-            initChangArr = [];
-        }
-
-        if (hongArr.length != 0) {
-            let initHongArr = Array.from(new Set(hongArr))
-            msg.channel.send('홍련: ' + initHongArr);
-            initHongArr = [];
-        }
-
-        if (darkArr.length != 0) {
-            let initDarkArr = Array.from(new Set(darkArr));
-            msg.channel.send('칠흑: ' + initDarkArr);
-            initDarkArr = [];
-        }
-
-        msg.channel.send('쿠로 목록이야 쿠뽀~');
-
-        kuroArr = [];
-        sinArr = [];
-        changArr = [];
-        hongArr = [];
-        darkArr = [];
-    }
+    await autoKuro(msg);
 
     // 지도 이미지를 바로 보여주는 기능
     await findMapImage(msg);
 
-    if (ffMsg.length === 4 && ffMsg[3] === '-t') {
-        if (ffMsg[0] === '/ff') {
-            await msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], false));
-            await msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], false));
-            await msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], false));
-            await msg.author.send(await ParseEdenPromise(ffMsg[1], ffMsg[2], true));
-            await msg.author.send(await ParseAsphodelos(ffMsg[1], ffMsg[2], true));
-            await msg.author.send(AlertText);
-        }
-    } else if (ffMsg.length === 3) {
-        if (ffMsg[0] === '/ff') {
-            await msg.author.send(await ParseEdenGate(ffMsg[1], ffMsg[2], true));
-            await msg.author.send(await ParseEdenVerse(ffMsg[1], ffMsg[2], true));
-            await msg.author.send(await ParseUltimateAlexander(ffMsg[1], ffMsg[2], true));
-            await msg.author.send(await ParseEdenPromise(ffMsg[1], ffMsg[2], true));
-            await msg.author.send(await ParseAsphodelos(ffMsg[1], ffMsg[2], true));
-            await msg.author.send(AlertText);
-        }
-    }
+    await logsLoad(msg);
 
     // Bot 을 들어오게 함
     if (msg.content === ';;라리호' || msg.content === ';;join') {

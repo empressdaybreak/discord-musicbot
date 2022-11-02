@@ -1,4 +1,4 @@
-export async function findMapImage(msg) {
+export const findMapImage = async (msg) => {
     if (msg.content.startsWith(";;지도")) {
         const word = msg.content.replace(/^;;지도\s*/, '').split(' ');
 
