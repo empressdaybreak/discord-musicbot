@@ -1,14 +1,6 @@
-import {
-    Client,
-    DMChannel,
-    NewsChannel,
-    StreamDispatcher,
-    TextChannel,
-    VoiceChannel,
-    VoiceConnection,
-} from 'discord.js';
+import {Client, DMChannel, NewsChannel, StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection} from 'discord.js';
 import ytdl from 'ytdl-core-discord';
-import youtubeSearch, { YouTubeSearchResults } from 'youtube-search';
+import youtubeSearch, {YouTubeSearchResults} from 'youtube-search';
 import Timeout = NodeJS.Timeout;
 import {findMapImage} from "./FunctionList/FFMap/FFMapFunc";
 import {autoKuro} from "./FunctionList/FFKuro/FFKuroFunc";
@@ -16,6 +8,7 @@ import {randomParty} from "./FunctionList/FFRandomParty/FFRandomPartyFunc";
 import {freeChannelNotice, musicChannelNotice, updateNotice} from "./FunctionList/FFBotTalk/FFBotTalkFunc";
 import {autoSpoiler} from "./FunctionList/FFSpoiler/FFSpoilerFunc";
 import {logsLoad} from "./FunctionList/FFLogs/FFLogsLoadFunc";
+import config from "./config";
 
 const client = new Client();
 
@@ -50,7 +43,7 @@ const opts = {
  */
 async function searchYouTube(term): Promise<YouTubeSearchResults[]> {
     try {
-        const {results} = await youtubeSearch(term,opts);
+        const {results} = await youtubeSearch(term, opts);
         console.log(results);
         return results;
     } catch (e) {
@@ -76,7 +69,7 @@ const musicPlay = async () => {
         await ytdl(video.link, {filter: "audioonly"}),
         {
             type: 'opus',
-            highWaterMark: 1<<32,
+            highWaterMark: 1 << 32,
         }
     ) || null;
 
@@ -94,7 +87,9 @@ const musicPlay = async () => {
 const BotObserver = async (channel: VoiceChannel) => {
     if (channel.members.size - 1 === 0) {
         clearInterval(intervalTimer!!);
-        setTimeout(() => { ChannelUserCheck(channel) }, 180000);
+        setTimeout(() => {
+            ChannelUserCheck(channel)
+        }, 180000);
     }
 }
 
@@ -103,7 +98,9 @@ const ChannelUserCheck = async (channel: VoiceChannel) => {
     if (channel.members.size - 1 === 0) {
         await BotDisconnect();
     } else {
-        intervalTimer = setInterval(() => { BotObserver(channel) }, 1000);
+        intervalTimer = setInterval(() => {
+            BotObserver(channel)
+        }, 1000);
     }
 }
 
@@ -118,7 +115,7 @@ const BotDisconnect = async () => {
 // 봇이 켜지고 준비가 되면 실행
 client.on('ready', () => {
     console.log(`${client.user!.tag}가 켜졌습니다!`);
-    client.user?.setActivity('식빵 굽기', { type: 'PLAYING' });
+    client.user?.setActivity('식빵 굽기', {type: 'PLAYING'});
 });
 
 // 새로운 멤버가 오면 환영메시지
@@ -148,6 +145,7 @@ client.on('message', async msg => {
     // 지도 이미지를 바로 보여주는 기능
     await findMapImage(msg);
 
+    // 프프로그 기록을 보여주는 기능
     await logsLoad(msg);
 
     // Bot 을 들어오게 함
@@ -164,7 +162,9 @@ client.on('message', async msg => {
             voiceConnection = await msg.member?.voice.channel?.join();
 
             const channel = msg.member?.voice.channel;
-            intervalTimer = setInterval(() => { BotObserver(channel) }, 1000);
+            intervalTimer = setInterval(() => {
+                BotObserver(channel)
+            }, 1000);
         }
     }
 
@@ -202,7 +202,7 @@ client.on('message', async msg => {
 
     // 음악 검색을 함
     if (msg.content.startsWith(';;f')) {
-        if(!msg.member?.voice.channel) {
+        if (!msg.member?.voice.channel) {
             await msg.channel.send('채널에는 먼저 들어와줘 쿠뽀!');
         } else if (!voiceConnection) {
             await msg.channel.send('채널에 먼저 들여보내줘 쿠뽀!');
@@ -233,7 +233,7 @@ client.on('message', async msg => {
             await msg.channel.send('채널에는 아무도 없는것 같다 쿠뽀!');
         } else if (wordTerm.startsWith('http')) {
             // 검색하지 않고 바로 링크를 입력했을 때 바로 재생 되도록 함
-            if (wordTerm.includes('youtube') === false) {
+            if (!wordTerm.includes('youtube')) {
                 await msg.channel.send('유튜브 링크로만 부탁해 쿠뽀!');
             } else if (!isPlaying) {
                 musicQueue.push({
@@ -287,7 +287,7 @@ client.on('message', async msg => {
     if (msg.content === ';;l') {
         let musicListMessage = '';
 
-        if (musicQueue.length == 0){
+        if (musicQueue.length == 0) {
             await msg.channel.send("예약되어 있는 노래가 없어 쿠뽀!");
         } else {
             musicQueue.forEach((item, index) => {
@@ -299,5 +299,5 @@ client.on('message', async msg => {
     }
 });
 
-client.login('NjU1NDIwNjM0ODkyODYxNDkz.XfT2CA.qbyPl2k9u2NfFg5pD4L2_CnZQqo');
+client.login(config.DISCORD_KEY);
 
