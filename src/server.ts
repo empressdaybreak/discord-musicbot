@@ -133,10 +133,10 @@ client.on('message', async msg => {
     await freeChannelNotice(msg, client);
 
     // 특정 채널 자동 메시지 스포일러 기능
-    await autoSpoiler(msg, client);
+    // await autoSpoiler(msg, client);
 
     // 원하는 인원수 만큼 랜덤으로 파티원을 묶어 파티를 만들어줌
-    await randomParty(msg);
+    // await randomParty(msg);
 
     // 쿠로 중복 단어 제거 하여 보여주는 기능
     await autoKuro(msg);
