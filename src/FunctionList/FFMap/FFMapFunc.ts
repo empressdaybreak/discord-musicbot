@@ -80,7 +80,7 @@ export const findMapImage = async (msg) => {
                 ]
             })
         } else {
-            await msg.channel.send('지역 이름을 다시 확인해줘 쿠뽀!');
+            await msg.channel.send('지역 이름을 다시 확인해줘 쿠뽀! 지도는 12, 14등급만 지원하고 있어 쿠뽀!');
         }
     }
 };
