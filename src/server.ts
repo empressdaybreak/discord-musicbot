@@ -154,7 +154,7 @@ client.on('message', async msg => {
 
         if (!msg.member?.voice.channel) {
             await msg.channel.send('채널에는 먼저 들어와줘 쿠뽀!');
-        } else if (channelIdNumber != '764505140639563799') {
+        } else if (channelIdNumber != '827415974386073650') {
             await msg.channel.send('음악방🎵 으로 이동해줘 쿠뽀!');
         } else {
             await msg.channel.send('무슨 노래를 재생해 쿠뽀?');
